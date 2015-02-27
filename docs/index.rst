@@ -83,5 +83,3 @@ Executable Python code is also emitted: It only serves for cross-checking
 correctness. For efficient computations, templated C++ code will be emitted in
 the future the Jacobian will be obtained with reverse mode automatic 
 differentiation.
-
---------------------------------------------------------------------------------
