@@ -56,6 +56,7 @@ material flows.
 .. image:: ./pics/Cascade.png
    :alt: Digraph representation of a distillation column.
    :align: center
+   :scale: 75%
 
 Currently, recovering the directed edges is only possible if the input 
 connectors of the equipments are called `inlet`, and their output connectors are
@@ -74,6 +75,7 @@ explicitly and safely eliminated from which equations.
 .. image:: ./pics/ExprTree.png
    :alt: Expression Tree in SymPy.
    :align: center
+   :scale: 75%
 
 4. Optimal tearing
 ------------------
