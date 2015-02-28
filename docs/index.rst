@@ -1,10 +1,15 @@
+.. sdopt-tearing documentation master file, created by
+   sphinx-quickstart on Sat Feb 28 23:04:04 2015.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
 
 =======================================
 Exact and heuristic methods for tearing
 =======================================
 
-A *prototype* implementation of various tearing algorithms is presented by 
-walking through a demo example. The technical details will be published in an
+An example is presented here, showing the capabilities of the research prototype
+of of various tearing algorithms. The technical details will be published in an
 academic paper. The `source code is available on GitHub 
 <https://github.com/baharev/sdopt-tearing>`_ under the 3-clause BSD license.
 
@@ -184,3 +189,20 @@ the following Python code is generated (hand-edited to improve readability)::
 The templated C++ version of this code will greatly benefit from code 
 optimization performed by the C++ compiler; I expect the generated code to be 
 as good as hand-written.
+
+--------------------------------------------------------------------------------
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
