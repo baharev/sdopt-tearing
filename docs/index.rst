@@ -39,7 +39,7 @@ application takes this flattened model as input.
 
 
 2. Recovering the process graph
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------
 
 A directed graph is recovered from the 
 flattened model: The equipments correspond to the vertices of the process graph,
@@ -68,7 +68,7 @@ explicitly and safely eliminated from which equations.
    :align: center
 
 4. Optimal tearing
-~~~~~~~~~~~~~~~~~~
+------------------
 
 If Gurobi is installed, the system of equations is ordered 
 optimally, with an exact method. 
@@ -77,11 +77,14 @@ optimally, with an exact method.
    :alt: Optimal tearing, obtained with integer programming.
    :align: center
 
-**A tearing heuristic exploiting the natural block structure.** Technical 
-systems can be partitioned into smaller blocks along the equipment boundaries in 
-a fairly natural way. We call this partitioning the natural block structure. The 
-implemented tearing heuristic first orders the blocks, then the equations within
-each block.
+
+5. A tearing heuristic exploiting the natural block structure
+-------------------------------------------------------------
+
+Technical systems can be partitioned into smaller blocks along the equipment 
+boundaries in a fairly natural way. We call this partitioning the natural block 
+structure. The implemented tearing heuristic first orders the blocks, then the 
+equations within each block.
 
 .. image:: ./pics/TearingWithBlocks.png
    :alt: Tearing with the block structure.
@@ -89,7 +92,11 @@ each block.
 
 The above picture shows the so-called spiked form.
 
-**Code generation after tearing.** The `AMPL <http://en.wikipedia.org/wiki/AMPL>`_
+
+6. Code generation after tearing
+--------------------------------
+
+The `AMPL <http://en.wikipedia.org/wiki/AMPL>`_
 code is written out in such a way that the variables can be eliminated as 
 desired. The reduced system will have as many variables and equations as the 
 number of spike columns in the spiked form.
