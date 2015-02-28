@@ -1,5 +1,5 @@
 
-
+=======================================
 Exact and heuristic methods for tearing
 =======================================
 
@@ -14,7 +14,7 @@ under the 3-clause BSD license.
 --------------------------------------------------------------------------------
 
 Requirements
-------------
+============
 
 The :mod:`six`, :mod:`networkx`, and :mod:`sympy` packages are necessary; 
 :mod:`matplotlib` is recommended but not required. If you wish to run
@@ -26,9 +26,12 @@ the integer programming solver.
 --------------------------------------------------------------------------------
 
 Demo application
-----------------
+================
 
-**Flattening.** The Modelica model :file:`data/demo.mo` has already been 
+Flattening
+----------
+
+The Modelica model :file:`data/demo.mo` has already been 
 flattened with the JModelica compiler (by calling :func:`compile_fmux`; the 
 relevant modules are :mod:`flatten` and :mod:`fmux_creator`). The demo 
 application takes this flattened model as input.
@@ -38,7 +41,7 @@ flattened model: The equipments correspond to the vertices of the process graph,
 the edges correspond to the material flows.
 
 .. image:: ./pics/Cascade.png
-   :alt: Digraph represenatation of a distillation column.
+   :alt: Digraph representation of a distillation column.
    :align: center
 
 Currently, recovering the directed edges is only possible if the input 
