@@ -28,6 +28,7 @@ the integer programming solver.
 Demo application
 ================
 
+
 Flattening
 ----------
 
@@ -36,7 +37,11 @@ flattened with the JModelica compiler (by calling :func:`compile_fmux`; the
 relevant modules are :mod:`flatten` and :mod:`fmux_creator`). The demo 
 application takes this flattened model as input.
 
-**Recovering the process graph.** A directed graph is recovered from the 
+
+Recovering the process graph
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A directed graph is recovered from the 
 flattened model: The equipments correspond to the vertices of the process graph,
 the edges correspond to the material flows.
 
@@ -50,8 +55,11 @@ called `outlet`. There is an ongoing discussion with the JModelica developers on
 reconstructing this information in a generic way, without assuming any naming 
 convention.
 
-**Symbolic manipulation of the equations.** The 
-`expression tree <http://docs.sympy.org/latest/tutorial/manipulation.html>`_ of 
+
+Symbolic manipulation of the equations
+--------------------------------------
+
+The `expression tree <http://docs.sympy.org/latest/tutorial/manipulation.html>`_ of 
 the equations are symbolically manipulated to determine which variables can be 
 explicitly and safely eliminated from which equations.
 
@@ -59,7 +67,10 @@ explicitly and safely eliminated from which equations.
    :alt: Expression Tree in SymPy.
    :align: center
 
-**Optimal tearing.** If Gurobi is installed, the system of equations is ordered 
+Optimal tearing
+~~~~~~~~~~~~~~~
+
+If Gurobi is installed, the system of equations is ordered 
 optimally, with an exact method. 
 
 .. image:: ./pics/OptimalTearing.png
