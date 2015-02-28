@@ -3,10 +3,7 @@
 Exact and heuristic methods for tearing
 =======================================
 
-A *prototype* implementation of tearing algorithms is presented here. The 
-`source code is available on GitHub <https://github.com/baharev/SDOPT/tree/tearing>`_ 
-under the 3-clause BSD license.
-
+A *prototype* implementation of various tearing algorithms is presented here.
 The picture below shows a sparse matrix ordered to the so-called spiked form.
 The original matrix is of size `76 x 76`; this can be reduced to a `5 x 5` 
 matrix (where `5` is the number of spike columns). The blue lines correspond to 
@@ -17,7 +14,15 @@ possible).
 .. image:: ./pics/SpikedForm.png
    :alt: A sparse matrix ordered to the so-called spiked form.
    :align: center
-   :scale: 75%
+   :scale: 50%
+
+--------------------------------------------------------------------------------
+
+License
+=======
+
+The `source code is available on GitHub <https://github.com/baharev/sdopt-tearing>`_ 
+under the 3-clause BSD license.
 
 --------------------------------------------------------------------------------
 
@@ -37,8 +42,8 @@ Demo application
 ================
 
 
-1. Flattening
--------------
+1. Input
+--------
 
 The Modelica model :file:`data/demo.mo` has already been 
 flattened with the JModelica compiler (by calling :func:`compile_fmux`; the 
@@ -49,9 +54,9 @@ application takes this flattened model as input.
 2. Recovering the process graph
 -------------------------------
 
-A directed graph is recovered from the 
-flattened model: The equipments correspond to the vertices of the process graph,
-the edges correspond to the material flows.
+A directed graph is recovered from the flattened model: The equipments 
+correspond to the vertices of the process graph, the edges correspond to the 
+material flows.
 
 .. image:: ./pics/Cascade.png
    :alt: Digraph representation of a distillation column.
