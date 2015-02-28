@@ -4,8 +4,11 @@ Exact and heuristic methods for tearing
 =======================================
 
 A *prototype* implementation of various tearing algorithms is presented by 
-walking through a demo example. The `source code is available on GitHub 
+walking through a demo example. The technical details will be published in an
+academic paper. The `source code is available on GitHub 
 <https://github.com/baharev/sdopt-tearing>`_ under the 3-clause BSD license.
+
+.. _spiked-form:
 
 The picture below shows a sparse matrix ordered to the so-called spiked form.
 The original matrix is of size `76 x 76`; this can be reduced to a `5 x 5` 
@@ -70,8 +73,9 @@ convention.
 -----------------------------------------
 
 The equations are represented as binary expression trees in the flat Modelica
-model. The picture below shows the expression tree for 
-`y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1])`.
+model. The picture below shows the expression tree for ::
+
+    y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1])
 
 .. image:: ./pics/ExprTree.png
    :alt: Expression Tree in SymPy.
@@ -88,12 +92,17 @@ if `x` may potentially take on the value `0`.
 4. Optimal tearing
 ------------------
 
-If Gurobi is installed, the system of equations is ordered 
-optimally, with an exact method. 
+If Gurobi is installed, the Jacobian is ordered optimally, with an exact method.
+For same system that was shown on the top (the very 
+:ref:`first picture <spiked-form>`), we get an
+ordering that yields a `4 x 4` reduced system (compared to `5 x 5` obtained with
+the heuristic method). The integer programming approach does not need the block
+structure (those were the blue lines in the first picture).
 
 .. image:: ./pics/OptimalTearing.png
    :alt: Optimal tearing, obtained with integer programming.
    :align: center
+   :scale: 75%
 
 
 5. A tearing heuristic exploiting the natural block structure
@@ -102,14 +111,13 @@ optimally, with an exact method.
 Technical systems can be partitioned into smaller blocks along the equipment 
 boundaries in a fairly natural way. We call this partitioning the natural block 
 structure. The implemented tearing heuristic first orders the blocks, then the 
-equations within each block.
+equations within each block. This is how the :ref:`first picture <spiked-form>`
+with the spiked form was obtained. It is also repeated here:
 
-.. image:: ./pics/TearingWithBlocks.png
+.. image:: ./pics/SpikedForm.png
    :alt: Tearing with the block structure.
    :align: center
-
-The above picture shows the so-called spiked form.
-
+   :scale: 50%
 
 6. Code generation after tearing
 --------------------------------
