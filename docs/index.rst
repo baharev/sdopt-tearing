@@ -9,7 +9,7 @@ Exact and heuristic methods for tearing
 =======================================
 
 An example is presented here, showing the capabilities of the research prototype
-of of various tearing algorithms. The technical details will be published in an
+of various tearing algorithms. The technical details will be published in an
 academic paper. The `source code is available on GitHub 
 <https://github.com/baharev/sdopt-tearing>`_ under the 3-clause BSD license.
 
@@ -17,16 +17,18 @@ academic paper. The `source code is available on GitHub
 
 The picture below shows a sparse matrix ordered to the so-called 
 **spiked form**.
-The original matrix is of size `76 x 76`; this can be reduced to a `5 x 5` 
-matrix (where `5` is the number of spike columns). The blue lines correspond to 
-the equipment boundaries in the technical system; the red squares are above the 
-diagonal; the grey squares are "forbidden" variables (no explicit elimination 
-possible).
+The matrix is of size 76x76; this can be reduced to a 5x5 
+matrix, where 5 is determined by the number of spike columns -- columns with red
+entries. The blue lines correspond to the equipment boundaries in the technical 
+system; the entries above the diagonal are red; the gray squares are "forbidden"
+variables (no explicit elimination possible).
 
 .. image:: ./pics/SpikedForm.png
    :alt: A sparse matrix ordered to the so-called spiked form.
    :align: center
    :scale: 50%
+
+This plot has been automatically generated with the prototype implementation.
 
 --------------------------------------------------------------------------------
 
@@ -43,17 +45,17 @@ the integer programming solver.
 
 --------------------------------------------------------------------------------
 
-Demo application
-================
+Steps of the demo application
+=============================
 
 
-1. Input
---------
+1. Input: flattened Modelica model
+----------------------------------
 
 The Modelica model :file:`data/demo.mo` has already been 
-flattened with the JModelica compiler (by calling :func:`compile_fmux`; the 
-relevant modules are :mod:`flatten` and :mod:`fmux_creator`). The demo 
-application takes this flattened model as input.
+flattened with the `JModelica <http://www.jmodelica.org/>`_ compiler 
+(by calling :func:`compile_fmux`; the relevant modules are :mod:`flatten` and 
+:mod:`fmux_creator`). The demo application takes this flattened model as input.
 
 
 2. Recovering the process graph
@@ -69,10 +71,10 @@ material flows.
    :scale: 75%
 
 Currently, recovering the directed edges is only possible if the input 
-connectors of the equipments are called `inlet`, and their output connectors are
-called `outlet`. There is an ongoing discussion with the JModelica developers on 
-reconstructing this information in a generic way, without assuming any naming 
-convention.
+connectors of the equipments are called ``inlet``, and their output connectors 
+are called ``outlet``. There is an ongoing discussion with the JModelica 
+developers on reconstructing this information in a generic way, without assuming
+any naming convention.
 
 
 3. Symbolic manipulation of the equations
@@ -83,7 +85,7 @@ model. The picture below shows the expression tree for ::
 
     y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1])
 
-.. image:: ./pics/ExprTree.png
+.. image:: ./pics/ExprTree2.png
    :alt: Expression Tree in SymPy.
    :align: center
    :scale: 75%
@@ -91,7 +93,7 @@ model. The picture below shows the expression tree for ::
 The `expression tree <http://docs.sympy.org/latest/tutorial/manipulation.html>`_ of 
 the equations are symbolically manipulated with `SymPy <http://www.sympy.org/>`_
 to determine which variables can be explicitly and safely eliminated from which 
-equations. An example for unsafe elimination is rearreanging `x*y=1` to `y=1/x`
+equations. An example for unsafe elimination is rearranging `x*y=1` to `y=1/x`
 if `x` may potentially take on the value `0`.
 
 
@@ -156,9 +158,10 @@ below. ::
 Executable Python code is also emitted: It only serves for cross-checking 
 correctness. 
 
+--------------------------------------------------------------------------------
 
-7. Future work: code generation for reverse mode automatic differentiation
---------------------------------------------------------------------------
+Future work: code generation for reverse mode automatic differentiation
+=======================================================================
 
 For efficient computations, templated C++ code will be emitted in
 the future the Jacobian will be obtained with reverse mode automatic 
