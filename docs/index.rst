@@ -3,7 +3,10 @@
 Exact and heuristic methods for tearing
 =======================================
 
-A *prototype* implementation of various tearing algorithms is presented here.
+A *prototype* implementation of various tearing algorithms is presented by 
+walking through a demo example. The `source code is available on GitHub 
+<https://github.com/baharev/sdopt-tearing>`_ under the 3-clause BSD license.
+
 The picture below shows a sparse matrix ordered to the so-called spiked form.
 The original matrix is of size `76 x 76`; this can be reduced to a `5 x 5` 
 matrix (where `5` is the number of spike columns). The blue lines correspond to 
@@ -18,20 +21,12 @@ possible).
 
 --------------------------------------------------------------------------------
 
-License
-=======
-
-The `source code is available on GitHub <https://github.com/baharev/sdopt-tearing>`_ 
-under the 3-clause BSD license.
-
---------------------------------------------------------------------------------
-
 Requirements
 ============
 
 The :mod:`six`, :mod:`networkx`, and :mod:`sympy` packages are necessary; 
-:mod:`matplotlib` is recommended but not required. If you wish to run
-the exact algorithms based on integer programming, you will also need 
+:mod:`matplotlib` is recommended but not required. If you wish to run the exact 
+algorithms based on integer programming, you will also need 
 `Gurobi <http://www.gurobi.com/>`_. If you do not have Gurobi installed, the 
 demo application will detect it and simply skip those steps that would require 
 the integer programming solver.
