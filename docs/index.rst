@@ -10,11 +10,14 @@ under the 3-clause BSD license.
 The picture below shows a sparse matrix ordered to the so-called spiked form.
 The original matrix is of size `76 x 76`; this can be reduced to a `5 x 5` 
 matrix (where `5` is the number of spike columns). The blue lines correspond to 
-the equipment boundaries in the technical system.
+the equipment boundaries in the technical system; the red squares are above the 
+diagonal; the grey squares are "forbidden" variables (no explicit elimination 
+possible).
 
 .. image:: ./pics/SpikedForm.png
    :alt: A sparse matrix ordered to the so-called spiked form.
    :align: center
+   :scale: 75%
 
 --------------------------------------------------------------------------------
 
