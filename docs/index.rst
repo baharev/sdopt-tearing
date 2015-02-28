@@ -10,7 +10,8 @@ academic paper. The `source code is available on GitHub
 
 .. _spiked-form:
 
-The picture below shows a sparse matrix ordered to the so-called spiked form.
+The picture below shows a sparse matrix ordered to the so-called 
+**spiked form**.
 The original matrix is of size `76 x 76`; this can be reduced to a `5 x 5` 
 matrix (where `5` is the number of spike columns). The blue lines correspond to 
 the equipment boundaries in the technical system; the red squares are above the 
@@ -102,7 +103,7 @@ structure (those were the blue lines in the first picture).
 .. image:: ./pics/OptimalTearing.png
    :alt: Optimal tearing, obtained with integer programming.
    :align: center
-   :scale: 75%
+   :scale: 50%
 
 
 5. A tearing heuristic exploiting the natural block structure
@@ -119,14 +120,67 @@ with the spiked form was obtained. It is also repeated here:
    :align: center
    :scale: 50%
 
+
 6. Code generation after tearing
 --------------------------------
 
 The `AMPL <http://en.wikipedia.org/wiki/AMPL>`_
 code is written out in such a way that the variables can be eliminated as 
 desired. The reduced system will have as many variables and equations as the 
-number of spike columns in the spiked form.
+number of spike columns in the spiked form. An example code snippet is shown
+below. ::
+
+    # Unit
+    # Tears: condenser.divider.zeta (v19)
+    eq_14: v14 = v12*v19;  # condenser.divider.outlet[1].f[1] = condenser.divider.inlet[1].f[1]*condenser.divider.zeta
+    eq_15: v15 = v13*v19;  # condenser.divider.outlet[1].f[2] = condenser.divider.inlet[1].f[2]*condenser.divider.zeta
+    eq_16: v16 = v11*v19;  # condenser.divider.outlet[1].H = condenser.divider.inlet[1].H*condenser.divider.zeta
+    eq_17: v17 = v12 - v14;  # condenser.divider.outlet[2].f[1] = condenser.divider.inlet[1].f[1] - condenser.divider.outlet[1].f[1]
+    eq_18: v18 = v13 - v15;  # condenser.divider.outlet[2].f[2] = condenser.divider.inlet[1].f[2] - condenser.divider.outlet[1].f[2]
+    eq_19: ((v17*32.04)+(v18*60.1))-96.0 = 0;  # ((condenser.divider.outlet[2].f[1]*32.04)+(condenser.divider.outlet[2].f[2]*60.1))-96.0 = 0
+    eq_20: v20 = v11 - v16;  # condenser.divider.outlet[2].H = condenser.divider.inlet[1].H - condenser.divider.outlet[1].H
+    # Connections
+    eq_21: v21 = v20;  # cascade.stages[1].mixer.inlet[1].H = condenser.divider.outlet[2].H
+    eq_22: v22 = v17;  # cascade.stages[1].mixer.inlet[1].f[1] = condenser.divider.outlet[2].f[1]
+    eq_23: v23 = v18;  # cascade.stages[1].mixer.inlet[1].f[2] = condenser.divider.outlet[2].f[2]
+    eq_24: v24 = v16;  # distillateSink.inlet.H = condenser.divider.outlet[1].H
+    eq_25: v25 = v14;  # distillateSink.inlet.f[1] = condenser.divider.outlet[1].f[1]
+    eq_26: v26 = v15;  # distillateSink.inlet.f[2] = condenser.divider.outlet[1].f[2]
+
+
 Executable Python code is also emitted: It only serves for cross-checking 
-correctness. For efficient computations, templated C++ code will be emitted in
+correctness. 
+
+
+7. Future work: code generation for reverse mode automatic differentiation
+--------------------------------------------------------------------------
+
+For efficient computations, templated C++ code will be emitted in
 the future the Jacobian will be obtained with reverse mode automatic 
 differentiation.
+
+Source code is generated from the DAG representation of the expressions 
+in order to compute the 
+`Jacobian <http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant>`_
+with reverse mode 
+`automatic differentiation <http://en.wikipedia.org/wiki/Automatic_differentiation>`_. 
+Currently only Python code is emitted, in the near future, templated C++ code 
+will also be generated. For example, for the above example `exp(3*x+2*y)+4*z`
+the following Python code is generated (hand-edited to improve readability)::
+
+    # f = exp(3*x+2*y)+z
+    # Forward sweep
+    t1 = 3.0*x + 2.0*y
+    t2 = exp(t1)
+    f = 4.0*z + t2 - 1.0
+    # Backward sweep
+    u0 = 1.0
+    u1 = 4.0 * u0  # df/dz = 4
+    u2 = u0
+    u3 = t2 * u2
+    u4 = 3.0 * u3  # df/dx = 3*exp(3*x+2*y)
+    u5 = 2.0 * u3  # df/dy = 2*exp(3*x+2*y)
+
+The templated C++ version of this code will greatly benefit from code 
+optimization performed by the C++ compiler; I expect the generated code to be 
+as good as hand-written.
