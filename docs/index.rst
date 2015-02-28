@@ -29,8 +29,8 @@ Demo application
 ================
 
 
-Flattening
-----------
+1. Flattening
+-------------
 
 The Modelica model :file:`data/demo.mo` has already been 
 flattened with the JModelica compiler (by calling :func:`compile_fmux`; the 
@@ -38,8 +38,8 @@ relevant modules are :mod:`flatten` and :mod:`fmux_creator`). The demo
 application takes this flattened model as input.
 
 
-Recovering the process graph
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. Recovering the process graph
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A directed graph is recovered from the 
 flattened model: The equipments correspond to the vertices of the process graph,
@@ -56,8 +56,8 @@ reconstructing this information in a generic way, without assuming any naming
 convention.
 
 
-Symbolic manipulation of the equations
---------------------------------------
+3. Symbolic manipulation of the equations
+-----------------------------------------
 
 The `expression tree <http://docs.sympy.org/latest/tutorial/manipulation.html>`_ of 
 the equations are symbolically manipulated to determine which variables can be 
@@ -67,8 +67,8 @@ explicitly and safely eliminated from which equations.
    :alt: Expression Tree in SymPy.
    :align: center
 
-Optimal tearing
-~~~~~~~~~~~~~~~
+4. Optimal tearing
+~~~~~~~~~~~~~~~~~~
 
 If Gurobi is installed, the system of equations is ordered 
 optimally, with an exact method. 
