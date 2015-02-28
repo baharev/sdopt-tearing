@@ -7,6 +7,11 @@ A *prototype* implementation of tearing algorithms is presented here. The
 `source code is available on GitHub <https://github.com/baharev/SDOPT/tree/tearing>`_ 
 under the 3-clause BSD license.
 
+The picture below shows a sparse matrix ordered to the so-called spiked form.
+The original matrix is of size `76 x 76`; this can be reduced to a `5 x 5` 
+matrix (where `5` is the number of spike columns). The blue lines correspond to 
+the equipment boundaries in the technical system.
+
 .. image:: ./pics/SpikedForm.png
    :alt: A sparse matrix ordered to the so-called spiked form.
    :align: center
