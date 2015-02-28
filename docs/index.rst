@@ -24,6 +24,7 @@ possible).
 Requirements
 ============
 
+The code has been tested with Python 2.7 and 3.4. 
 The :mod:`six`, :mod:`networkx`, and :mod:`sympy` packages are necessary; 
 :mod:`matplotlib` is recommended but not required. If you wish to run the exact 
 algorithms based on integer programming, you will also need 
@@ -68,14 +69,21 @@ convention.
 3. Symbolic manipulation of the equations
 -----------------------------------------
 
-The `expression tree <http://docs.sympy.org/latest/tutorial/manipulation.html>`_ of 
-the equations are symbolically manipulated to determine which variables can be 
-explicitly and safely eliminated from which equations.
+The equations are represented as binary expression trees in the flat Modelica
+model. The picture below shows the expression tree for 
+`y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1])`.
 
 .. image:: ./pics/ExprTree.png
    :alt: Expression Tree in SymPy.
    :align: center
    :scale: 75%
+
+The `expression tree <http://docs.sympy.org/latest/tutorial/manipulation.html>`_ of 
+the equations are symbolically manipulated with `SymPy <http://www.sympy.org/>`_
+to determine which variables can be explicitly and safely eliminated from which 
+equations. An example for unsafe elimination is rearreanging `x*y=1` to `y=1/x`
+if `x` may potentially take on the value `0`.
+
 
 4. Optimal tearing
 ------------------
