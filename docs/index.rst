@@ -113,12 +113,19 @@ recognized and avoided; see also the gray entries in the
 4. Optimal tearing
 ------------------
 
-If Gurobi is installed, the Jacobian is ordered optimally, with an exact method.
-For same system that was shown on the top (the very 
-:ref:`first picture <spiked-form>`), we get an
-ordering that yields a `4 x 4` reduced system (compared to `5 x 5` obtained with
-the heuristic method). The integer programming approach does not need the block
-structure (those were the blue lines in the first picture).
+**There is no clear objective for tearing.** A possible objective is to minimize 
+the number of spike columns, or in other words, to minimize the size of the 
+final reduced system. Although this objective is questionable (it ignores 
+numerical stability for example), it nevertheless makes the meaning of optimal 
+mathematically well-defined.
+
+If Gurobi is installed, the Jacobian is ordered optimally with an exact method, 
+based on integer programming. For the same system that was shown in the 
+:ref:`first picture <spiked-form>`, we get an optimal ordering that yields a 4x4 
+reduced system. The suboptimal ordering, that was shown on the top of this page 
+(obtained with the heuristic method), gives a 5x5 reduced system. The integer 
+programming approach does not need or use the block structure which was given 
+with the blue lines in the first picture; here the blue lines are absent.
 
 .. image:: ./pics/OptimalTearing.png
    :alt: Optimal tearing, obtained with integer programming.
@@ -130,10 +137,13 @@ structure (those were the blue lines in the first picture).
 -------------------------------------------------------------
 
 Technical systems can be partitioned into smaller blocks along the equipment 
-boundaries in a fairly natural way. We call this partitioning the natural block 
-structure. The implemented tearing heuristic first orders the blocks, then the 
-equations within each block. This is how the :ref:`first picture <spiked-form>`
-with the spiked form was obtained. It is also repeated here:
+boundaries in a fairly natural way. We call this partitioning the 
+**natural block structure**. The implemented tearing heuristic first orders the 
+blocks, then the equations within each block. This is how the 
+:ref:`first picture <spiked-form>` with the spiked form was obtained. For your 
+convenience, exactly the same picture is shown again below.
+
+.. _OrderingWithBlocks:
 
 .. image:: ./pics/SpikedForm.png
    :alt: Tearing with the block structure.
@@ -144,11 +154,11 @@ with the spiked form was obtained. It is also repeated here:
 6. Code generation after tearing
 --------------------------------
 
-The `AMPL <http://en.wikipedia.org/wiki/AMPL>`_
+`AMPL <http://en.wikipedia.org/wiki/AMPL>`_
 code is written out in such a way that the variables can be eliminated as 
-desired. The reduced system will have as many variables and equations as the 
-number of spike columns in the spiked form. An example code snippet is shown
-below. ::
+desired. After the elimination, the reduced system has as many variables and 
+equations as the number of spike columns. An AMPL code snippet is shown 
+below from our running :file:`demo` example. ::
 
     # Unit
     # Tears: condenser.divider.zeta (v19)
@@ -167,27 +177,52 @@ below. ::
     eq_25: v25 = v14;  # distillateSink.inlet.f[1] = condenser.divider.outlet[1].f[1]
     eq_26: v26 = v15;  # distillateSink.inlet.f[2] = condenser.divider.outlet[1].f[2]
 
+In this code snippet, equations ``eq_14`` to ``eq_20`` and variables ``v14`` to
+``v20`` correspond to :ref:`the third block on the diagonal <OrderingWithBlocks>`, 
+starting counting at the top left corner. Variable ``v19`` corresponds to the 
+spike column of this third block. Equations ``eq_21`` to ``eq_26`` and 
+variables ``v21`` to ``v26`` correspond to the fourth diagonal block with only 
+black entries on its diagonal.
 
-Executable Python code is also emitted: It only serves for cross-checking 
-correctness. 
+Executable Python code is also emitted; it only serves for cross-checking 
+correctness.
 
 --------------------------------------------------------------------------------
 
-Future work: code generation for reverse mode automatic differentiation
-=======================================================================
+Future work 
+===========
 
-For efficient computations, templated C++ code will be emitted in
-the future the Jacobian will be obtained with reverse mode automatic 
-differentiation.
 
-Source code is generated from the DAG representation of the expressions 
-in order to compute the 
-`Jacobian <http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant>`_
-with reverse mode 
+Improved numerical stability and global convergence
+---------------------------------------------------
+
+
+
+
+Code generation for reverse mode automatic differentiation
+----------------------------------------------------------
+
+Achieving better numerical stability and global convergence is computationally
+expensive. For efficiency, it turned out to be crucial
+    
+  - to have full control over subproblem selection (roughly speaking: working 
+    with arbitrary number of diagonal blocks),
+    
+  - to generate source code for efficient evaluation (residual and Jacobian) 
+    of the subproblems,
+    
+  - and that the generated code works with user-defined data types.
+
+I am not aware of any automatic differentiation package that meets these 
+requirements.
+
+The diagonal blocks of the Jacobian will be obtained with reverse mode 
 `automatic differentiation <http://en.wikipedia.org/wiki/Automatic_differentiation>`_. 
-Currently only Python code is emitted, in the near future, templated C++ code 
-will also be generated. For example, for the above example `exp(3*x+2*y)+4*z`
-the following Python code is generated (hand-edited to improve readability)::
+For example, for ::
+
+    exp(3*x+2*y)+4*z 
+
+the following Python code is generated (hand-edited to improve readability) ::
 
     # f = exp(3*x+2*y)+z
     # Forward sweep
@@ -202,13 +237,13 @@ the following Python code is generated (hand-edited to improve readability)::
     u4 = 3.0 * u3  # df/dx = 3*exp(3*x+2*y)
     u5 = 2.0 * u3  # df/dy = 2*exp(3*x+2*y)
 
-The templated C++ version of this code will greatly benefit from code 
-optimization performed by the C++ compiler; I expect the generated code to be 
-as good as hand-written.
+This code is already automatically generated *today*. The templated C++ version of
+this code will greatly benefit from code optimization performed by the C++ 
+compiler, esp. from `constant folding and constant propagation 
+<http://en.wikipedia.org/wiki/Constant_folding>`_; I expect
+the generated assembly code to be as good as hand-written.
 
 --------------------------------------------------------------------------------
-
-Contents:
 
 .. toctree::
    :maxdepth: 2
