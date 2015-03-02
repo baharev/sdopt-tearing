@@ -196,11 +196,11 @@ Future work
 Improved numerical stability and global convergence
 ---------------------------------------------------
 
-
-
-
-Code generation for reverse mode automatic differentiation
-----------------------------------------------------------
+Tearing can yield small but very ill-conditioned systems; as a result, the final
+reduced system can be notoriusly difficult or even impossible to solve. The 
+recent results `[1] <http://dx.doi.org/10.1002/aic.14305>`_ and
+`[2] <http://www.mat.univie.ac.at/%7Eneum/ms/maniSol.pdf>`_ of our research 
+group show how this well-known numerical issue can be handled.
 
 Achieving better numerical stability and global convergence is computationally
 expensive. For efficiency, it turned out to be crucial
@@ -212,6 +212,11 @@ expensive. For efficiency, it turned out to be crucial
     of the subproblems,
     
   - and that the generated code works with user-defined data types.
+
+
+
+Code generation for reverse mode automatic differentiation
+----------------------------------------------------------
 
 I am not aware of any automatic differentiation package that meets these 
 requirements.
