@@ -189,41 +189,48 @@ correctness.
 
 --------------------------------------------------------------------------------
 
-Future work 
+
+Future work
 ===========
 
 
-Improved numerical stability and global convergence
----------------------------------------------------
+Improving numerical stability
+-----------------------------
 
-Tearing can yield small but very ill-conditioned systems; as a result, the final
-reduced system can be notoriusly difficult or even impossible to solve. The 
-recent results `[1] <http://dx.doi.org/10.1002/aic.14305>`_ and
-`[2] <http://www.mat.univie.ac.at/%7Eneum/ms/maniSol.pdf>`_ of our research 
-group show how this well-known numerical issue can be handled.
-
-Achieving better numerical stability and global convergence is computationally
-expensive. For efficiency, it turned out to be crucial
+Tearing can yield small but very ill-conditioned systems; as a consequence, the 
+final reduced systems can be notoriously difficult or even impossible to solve. 
+Our recent publications `[1] <http://dx.doi.org/10.1002/aic.14305>`_ and
+`[2] <http://www.mat.univie.ac.at/%7Eneum/ms/maniSol.pdf>`_  
+show *how* this well-known numerical issue of tearing can be resolved. The cost 
+of the improved numerical stability is the significantly increased computation 
+time. Our pilot Java implementation has shown that it is crucial
     
-  - to have full control over subproblem selection (roughly speaking: working 
-    with arbitrary number of diagonal blocks),
+  - to design a convenient API for subproblem selection (roughly speaking: 
+    to be able to work with arbitrary number of diagonal blocks), 
     
-  - to generate source code for efficient evaluation (residual and Jacobian) 
-    of the subproblems,
+  - to generate C++ source code for efficient evaluation of the subproblems
+    (the residual and the Jacobian of the blocks),
     
-  - and that the generated code works with user-defined data types.
+  - and that the generated source code works with user-defined data types.
+
+Creating a Python prototype implementation that meets the above requirements
+is the next item on the agenda.
 
 
+Source code generation for reverse mode automatic differentiation
+-----------------------------------------------------------------
 
-Code generation for reverse mode automatic differentiation
-----------------------------------------------------------
+The Jacobian is required when solving the subproblems with a solver like `IPOPT 
+<https://projects.coin-or.org/Ipopt>`_. I am not aware of any `automatic 
+differentiation <http://en.wikipedia.org/wiki/Automatic_differentiation>`_ 
+package that fulfills all the requirements listed above, so I have set out to 
+write my own. The primary challenge is to design an API that 
+makes it easy to work with subproblems, and that makes the interfacing with 
+various solvers only moderately painful. Generating source code for evaluating 
+the Jacobian of the subproblems is certainly not the main difficulty here.
 
-I am not aware of any automatic differentiation package that meets these 
-requirements.
-
-The diagonal blocks of the Jacobian will be obtained with reverse mode 
-`automatic differentiation <http://en.wikipedia.org/wiki/Automatic_differentiation>`_. 
-For example, for ::
+The diagonal blocks of the Jacobian will be obtained with reverse mode automatic
+differentiation. For example, for the expression ::
 
     exp(3*x+2*y)+4*z 
 
@@ -242,11 +249,12 @@ the following Python code is generated (hand-edited to improve readability) ::
     u4 = 3.0 * u3  # df/dx = 3*exp(3*x+2*y)
     u5 = 2.0 * u3  # df/dy = 2*exp(3*x+2*y)
 
-This code is already automatically generated *today*. The templated C++ version of
-this code will greatly benefit from code optimization performed by the C++ 
-compiler, esp. from `constant folding and constant propagation 
-<http://en.wikipedia.org/wiki/Constant_folding>`_; I expect
-the generated assembly code to be as good as hand-written.
+This code is already automatically generated *today*. 
+
+The templated C++ version of this code will greatly benefit from code 
+optimization performed by the C++ compiler, especially from `constant folding 
+and constant propagation <http://en.wikipedia.org/wiki/Constant_folding>`_. 
+I expect the generated assembly code to be as good as hand-written.
 
 --------------------------------------------------------------------------------
 
