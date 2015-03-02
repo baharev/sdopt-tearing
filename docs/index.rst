@@ -106,7 +106,7 @@ with `SymPy <http://www.sympy.org/>`_ to determine which variables can be
 explicitly and safely eliminated from which equations. An example for unsafe 
 elimination is the rearrangement of ``x*y=1`` to ``y=1/x`` if ``x`` may 
 potentially take on the value ``0``. Unsafe eliminations are automatically 
-recognized and avoided; see also the gray entries in the 
+recognized and avoided; these were the gray entries in the 
 :ref:`first picture <spiked-form>`.
 
 
@@ -122,8 +122,8 @@ mathematically well-defined.
 If Gurobi is installed, the Jacobian is ordered optimally with an exact method, 
 based on integer programming. For the same system that was shown in the 
 :ref:`first picture <spiked-form>`, we get an optimal ordering that yields a 4x4 
-reduced system. The suboptimal ordering, that was shown on the top of this page 
-(obtained with the heuristic method), gives a 5x5 reduced system. The integer 
+reduced system. The suboptimal ordering that was shown on the top of this page 
+(obtained with the heuristic method) gives a 5x5 reduced system. The integer 
 programming approach does not need or use the block structure which was given 
 with the blue lines in the first picture; here the blue lines are absent.
 
@@ -177,11 +177,11 @@ below from our running :file:`demo` example. ::
     eq_25: v25 = v14;  # distillateSink.inlet.f[1] = condenser.divider.outlet[1].f[1]
     eq_26: v26 = v15;  # distillateSink.inlet.f[2] = condenser.divider.outlet[1].f[2]
 
-In this code snippet, equations ``eq_14`` to ``eq_20`` and variables ``v14`` to
-``v20`` correspond to :ref:`the third block on the diagonal <OrderingWithBlocks>`, 
+In this code snippet, equations ``eq_14``--``eq_20`` and variables 
+``v14``--``v20`` correspond to :ref:`the third block on the diagonal <OrderingWithBlocks>`, 
 starting counting at the top left corner. Variable ``v19`` corresponds to the 
-spike column of this third block. Equations ``eq_21`` to ``eq_26`` and 
-variables ``v21`` to ``v26`` correspond to the fourth diagonal block with only 
+spike column of this third block. Equations ``eq_21``--``eq_26`` and 
+variables ``v21``--``v26`` correspond to the fourth diagonal block with only 
 black entries on its diagonal.
 
 Executable Python code is also emitted; it only serves for cross-checking 
