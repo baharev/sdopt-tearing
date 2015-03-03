@@ -188,7 +188,7 @@ In the above code snippet, equations ``eq_14``--``eq_20`` and variables
 diagonal block with only black entries on its diagonal.
 
 **Executable Python code is also generated for evaluating the reduced system.** 
-The Pyton code only serves for cross-checking correctness.
+The Pyton code only serves to cross-check correctness.
 
 --------------------------------------------------------------------------------
 
