@@ -10,17 +10,17 @@ Exact and heuristic methods for tearing
 
 A demo application is presented on this web-page, showing the capabilities
 of the novel tearing algorithms. The technical details will be published in an 
-academic paper. The source code of the prototype implementation is 
-`available on GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 
-3-clause BSD license.
+academic paper. The source code of the prototype implementation is `available on
+GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 3-clause BSD 
+license.
 
-**Requirements**. The code has been tested with Python 2.7 and 3.4. 
+**Software requirements**. The code has been tested with Python 2.7 and 3.4. 
 The :mod:`six`, :mod:`networkx`, and :mod:`sympy` packages are necessary; 
 :mod:`matplotlib` is recommended but not required. If you wish to run the exact 
-algorithms based on integer programming, you will also need 
-`Gurobi <http://www.gurobi.com/>`_. If you do not have Gurobi installed, the 
-demo application will detect its absence, and simply skips those steps that 
-would require the integer programming solver.
+algorithms based on integer programming, you will also need `Gurobi 
+<http://www.gurobi.com/>`_. If you do not have Gurobi installed, the demo 
+application will detect its absence, and simply skips those steps that would 
+require the integer programming solver.
 
 --------------------------------------------------------------------------------
 
@@ -31,13 +31,13 @@ Sparse matrices ordered to spiked form
 
 Roughly speaking, **tearing algorithms rearrange the rows and the columns of a 
 sparse matrix in such a way that the result is "close" to a lower triangular 
-matrix.** The picture below shows a sparse matrix ordered to the so-called spiked 
-form. The matrix is of size 76x76; this can be reduced to a 5x5 matrix, where 5 
-equals the number of spike columns, that is, columns with red entries. The blue 
-lines correspond to the equipment boundaries in the technical system; the tear
-variables are above the diagonal, and are painted red; the gray squares are "forbidden"
-variables (no explicit elimination possible). The elimination happens along the 
-diagonal.
+matrix.** The picture below shows a sparse matrix ordered to the so-called 
+spiked form. The matrix is of size 76x76; this can be reduced to a 5x5 matrix by 
+elimination, where 5 equals the number of spike columns, that is, columns with 
+red entries. The blue lines correspond to the equipment boundaries in the 
+technical system; the tear variables are above the diagonal, and are painted 
+red; the gray squares are "forbidden" variables (no explicit elimination 
+possible). The elimination is performed along the diagonal.
 
 .. image:: ./pics/SpikedForm.png
    :alt: A sparse matrix ordered to the so-called spiked form.
@@ -55,13 +55,13 @@ You find the source code of the demo application in :file:`demo.py`.
 1. Input: flattened Modelica model
 ----------------------------------
 
-The Modelica model :file:`data/demo.mo` has already been 
-flattened with the `JModelica <http://www.jmodelica.org/>`_ compiler 
-by calling :func:`compile_fmux`; check the :mod:`flatten` and 
+The `Modelica <https://www.modelica.org/>`_ model :file:`data/demo.mo` has 
+already been flattened with the `JModelica <http://www.jmodelica.org/>`_ 
+compiler by calling :func:`compile_fmux`; check the :mod:`flatten` and 
 :mod:`fmux_creator` modules for details. **The demo application takes the 
-flattened model as input.** The 
-`OpenModelica Compiler <https://openmodelica.org/openmodelicaworld/tools>`_ can 
-also emit the necessary XML file, see under *Export > Export XML* in OMEdit.
+flattened model as input.** The `OpenModelica Compiler 
+<https://openmodelica.org/openmodelicaworld/tools>`_ can also emit the necessary 
+XML file, see under *Export > Export XML* in OMEdit.
 
 
 2. Recovering the process graph
@@ -79,15 +79,14 @@ material flows. Below is the process graph of a distillation column with
 
 
 **The process graph is used for partitioning the Jacobian of the system of 
-equations:** This is how the blue lines in the :ref:`first picture <spiked-form>`
-were obtained.
-
+equations:** This is how the blue lines in the :ref:`first picture 
+<spiked-form>` were obtained.
 
 At the moment, recovering the directed edges is possible only if the input 
 connectors of the equipments are called ``inlet``, and their output connectors 
 are called ``outlet``. There is an ongoing discussion with the JModelica 
-developers on reconstructing the process graph in a generic way, without assuming
-any naming convention for the connectors.
+developers on reconstructing the process graph in a generic way, without 
+assuming any naming convention for the connectors.
 
 
 3. Symbolic manipulation of the equations
@@ -103,14 +102,13 @@ The picture below shows the expression tree for the equation: ::
    :align: center
    :scale: 75%
 
-The expression tree of the equations are 
-`symbolically manipulated <http://docs.sympy.org/latest/tutorial/manipulation.html>`_  
-with `SymPy <http://www.sympy.org/>`_ to **determine which variables can be 
-explicitly and safely eliminated from which equations.** An example for unsafe 
-elimination is the rearrangement of ``x*y=1`` to ``y=1/x`` if ``x`` may 
-potentially take on the value ``0``. Unsafe eliminations are automatically 
-recognized and avoided; these were the gray entries in the 
-:ref:`first picture <spiked-form>`.
+The expression tree of the equations are `symbolically manipulated 
+<http://docs.sympy.org/latest/tutorial/manipulation.html>`_  with `SymPy 
+<http://www.sympy.org/>`_ to **determine which variables can be explicitly and 
+safely eliminated from which equations.** An example for unsafe elimination is 
+the rearrangement of ``x*y=1`` to ``y=1/x`` if ``x`` may potentially take on the 
+value ``0``. Unsafe eliminations are automatically recognized and avoided; these 
+were the gray entries in the :ref:`first picture <spiked-form>`.
 
 
 4. Optimal tearing
@@ -128,8 +126,8 @@ based on integer programming.** For the same system that was shown in the
 reduced system. The suboptimal ordering shown in the first picture gives a 5x5 
 reduced system, and was obtained with the heuristic 
 method detailed in the next section. **The integer programming approach does not 
-need or use the block structure** which was given with the blue lines in the first
-picture; here the blue lines are absent.
+need or use the block structure** which was given with the blue lines in the 
+first picture; here the blue lines are absent.
 
 .. image:: ./pics/OptimalTearing.png
    :alt: Optimal tearing, obtained with integer programming.
@@ -140,7 +138,7 @@ picture; here the blue lines are absent.
 5. A tearing heuristic exploiting the natural block structure
 -------------------------------------------------------------
 
-Technical systems can be partitioned into smaller blocks along the equipment 
+Technical systems can be partitioned into blocks along the equipment 
 boundaries in a fairly natural way. We call this partitioning the 
 *natural block structure*. **The implemented tearing heuristic first orders the 
 blocks, then the equations within each block.** This is how the 
@@ -155,13 +153,12 @@ convenience, exactly the same picture is shown again below.
    :scale: 50%
 
 
-6. Code generation after tearing
---------------------------------
+6. AMPL and Python code generation after tearing
+------------------------------------------------
 
 **Our ultimate goal is to reduce a large, sparse system of equations to a small
-one.**
-`AMPL <http://en.wikipedia.org/wiki/AMPL>`_
-code is written out in such a way that the variables can be eliminated as 
+one.** To this end, `AMPL <http://en.wikipedia.org/wiki/AMPL>`_
+code is generated in such a way that the variables can be eliminated as 
 desired. After the elimination, **the reduced system has as many variables and 
 equations as the number of spike columns.** An AMPL code snippet is shown 
 below, generated with the demo application. ::
@@ -184,14 +181,14 @@ below, generated with the demo application. ::
     eq_26: v26 = v15;  # distillateSink.inlet.f[2] = condenser.divider.outlet[1].f[2]
 
 In the above code snippet, equations ``eq_14``--``eq_20`` and variables 
-``v14``--``v20`` correspond to :ref:`the third block on the diagonal <OrderingWithBlocks>`, 
-starting counting at the top left corner. Variable ``v19`` corresponds to the 
-spike column of this third block. Equations ``eq_21``--``eq_26`` and 
-variables ``v21``--``v26`` correspond to the fourth diagonal block with only 
-black entries on its diagonal.
+``v14``--``v20`` correspond to :ref:`the third block on the diagonal 
+<OrderingWithBlocks>`, starting counting at the top left corner. Variable 
+``v19`` corresponds to the spike column of this third block. Equations 
+``eq_21``--``eq_26`` and variables ``v21``--``v26`` correspond to the fourth 
+diagonal block with only black entries on its diagonal.
 
-**Executable Python code is also emitted for evaluating the reduced system.** The 
-Pyton code only serves for cross-checking correctness.
+**Executable Python code is also generated for evaluating the reduced system.** 
+The Pyton code only serves for cross-checking correctness.
 
 --------------------------------------------------------------------------------
 
@@ -203,13 +200,13 @@ Future work
 Improving numerical stability
 -----------------------------
 
-**Tearing can yield small but very ill-conditioned systems**; as a consequence, the 
-final reduced systems can be notoriously difficult or even impossible to solve. 
-**Our recent publications** `[1] <http://dx.doi.org/10.1002/aic.14305>`_ **and**
-`[2] <http://www.mat.univie.ac.at/%7Eneum/ms/maniSol.pdf>`_  
-**show how this well-known numerical issue of tearing can be resolved.** The cost 
-of the improved numerical stability is the significantly increased computation 
-time. Our pilot Java implementation has shown that it is crucial
+**Tearing can yield small but very ill-conditioned systems**; as a consequence, 
+the final reduced systems can be notoriously difficult or even impossible to 
+solve. **Our recent publications** `[1] <http://dx.doi.org/10.1002/aic.14305>`_ 
+**and** `[2] <http://www.mat.univie.ac.at/%7Eneum/ms/maniSol.pdf>`_  **show how 
+this well-known numerical issue of tearing can be resolved.** The cost of the 
+improved numerical stability is the significantly increased computation time. 
+Our pilot Java implementation has shown that it is crucial
     
   - to design a convenient API for subproblem selection (roughly speaking: 
     to be able to work with arbitrary number of diagonal blocks), 
@@ -219,8 +216,8 @@ time. Our pilot Java implementation has shown that it is crucial
     
   - that the generated source code works with user-defined data types.
 
-Creating a Python prototype implementation that meets the above requirements
-is the next item on the agenda.
+The next item on the agenda is to create a Python prototype implementation that 
+meets all these requirements.
 
 
 Source code generation for reverse mode automatic differentiation
@@ -229,11 +226,11 @@ Source code generation for reverse mode automatic differentiation
 The Jacobian is required when solving the subproblems with a solver like `IPOPT 
 <https://projects.coin-or.org/Ipopt>`_. I am not aware of any `automatic 
 differentiation <http://en.wikipedia.org/wiki/Automatic_differentiation>`_ 
-package that fulfills all the requirements listed above, so I have set out to 
-write my own. The primary challenge is to design an API that 
-makes it easy to work with subproblems, and that makes the interfacing with 
-various solvers only moderately painful. Generating source code for evaluating 
-the Jacobian of the subproblems is certainly not the main difficulty here.
+package that would fulfill all the requirements listed above, so I have set out 
+to write my own. The primary challenge is to design an API that makes it easy to 
+work with subproblems, and that makes the interfacing with various solvers only 
+moderately painful. Generating source code for evaluating the Jacobian of the 
+subproblems is certainly not the main difficulty here.
 
 The diagonal blocks of the Jacobian will be obtained with reverse mode automatic
 differentiation. For example, for the expression ::
