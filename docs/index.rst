@@ -8,9 +8,9 @@
 Exact and heuristic methods for tearing
 =======================================
 
-An example is presented on this web-page, showing the capabilities of novel 
-tearing algorithms. The technical details will be published in an academic 
-paper. The source code of the prototype implementation is 
+A demo application is presented on this web-page, showing the capabilities
+of the novel tearing algorithms. The technical details will be published in an 
+academic paper. The source code of the prototype implementation is 
 `available on GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 
 3-clause BSD license.
 
@@ -19,8 +19,8 @@ The :mod:`six`, :mod:`networkx`, and :mod:`sympy` packages are necessary;
 :mod:`matplotlib` is recommended but not required. If you wish to run the exact 
 algorithms based on integer programming, you will also need 
 `Gurobi <http://www.gurobi.com/>`_. If you do not have Gurobi installed, the 
-demo application will detect it and simply skip those steps that would require 
-the integer programming solver.
+demo application will detect its absence, and simply skips those steps that 
+would require the integer programming solver.
 
 --------------------------------------------------------------------------------
 
@@ -29,11 +29,13 @@ the integer programming solver.
 Sparse matrices ordered to spiked form
 ======================================
 
-The picture below shows a sparse matrix ordered to the so-called spiked form. 
-The matrix is of size 76x76; this can be reduced to a 5x5 matrix, where 5 is 
-determined by the number of spike columns, that is, columns with red entries. 
-The blue lines correspond to the equipment boundaries in the technical system; 
-the entries above the diagonal are red; the gray squares are "forbidden" 
+Roughly speaking, **tearing algorithms rearrange the rows and the columns of a 
+sparse matrix in such a way that the result is "close" to a lower triangular 
+matrix.** The picture below shows a sparse matrix ordered to the so-called spiked 
+form. The matrix is of size 76x76; this can be reduced to a 5x5 matrix, where 5 
+equals the number of spike columns, that is, columns with red entries. The blue 
+lines correspond to the equipment boundaries in the technical system; the tear
+variables are above the diagonal, and are painted red; the gray squares are "forbidden"
 variables (no explicit elimination possible). The elimination happens along the 
 diagonal.
 
@@ -49,14 +51,15 @@ Steps of the demo application
 
 You find the source code of the demo application in :file:`demo.py`.
 
+
 1. Input: flattened Modelica model
 ----------------------------------
 
 The Modelica model :file:`data/demo.mo` has already been 
 flattened with the `JModelica <http://www.jmodelica.org/>`_ compiler 
-(by calling :func:`compile_fmux`; check :mod:`flatten` and 
-:mod:`fmux_creator` for details). The demo application takes this flattened 
-model as input. The 
+by calling :func:`compile_fmux`; check the :mod:`flatten` and 
+:mod:`fmux_creator` modules for details. **The demo application takes the 
+flattened model as input.** The 
 `OpenModelica Compiler <https://openmodelica.org/openmodelicaworld/tools>`_ can 
 also emit the necessary XML file, see under *Export > Export XML* in OMEdit.
 
@@ -75,8 +78,8 @@ material flows. Below is the process graph of a distillation column with
    :scale: 75%
 
 
-The process graph is used for partitioning the Jacobian of the system of 
-equations: This is how the blue lines in the :ref:`first picture <spiked-form>`
+**The process graph is used for partitioning the Jacobian of the system of 
+equations:** This is how the blue lines in the :ref:`first picture <spiked-form>`
 were obtained.
 
 
@@ -102,8 +105,8 @@ The picture below shows the expression tree for the equation: ::
 
 The expression tree of the equations are 
 `symbolically manipulated <http://docs.sympy.org/latest/tutorial/manipulation.html>`_  
-with `SymPy <http://www.sympy.org/>`_ to determine which variables can be 
-explicitly and safely eliminated from which equations. An example for unsafe 
+with `SymPy <http://www.sympy.org/>`_ to **determine which variables can be 
+explicitly and safely eliminated from which equations.** An example for unsafe 
 elimination is the rearrangement of ``x*y=1`` to ``y=1/x`` if ``x`` may 
 potentially take on the value ``0``. Unsafe eliminations are automatically 
 recognized and avoided; these were the gray entries in the 
@@ -113,19 +116,20 @@ recognized and avoided; these were the gray entries in the
 4. Optimal tearing
 ------------------
 
-**There is no clear objective for tearing.** A possible objective is to minimize 
-the number of spike columns, or in other words, to minimize the size of the 
-final reduced system. Although this objective is questionable (it ignores 
+**There is no clear objective for tearing. A common choice is to minimize the 
+size of the final reduced system,** or in other words, to minimize the number of 
+spike columns. Although this objective is questionable (it ignores 
 numerical stability for example), it nevertheless makes the meaning of optimal 
 mathematically well-defined.
 
-If Gurobi is installed, the Jacobian is ordered optimally with an exact method, 
-based on integer programming. For the same system that was shown in the 
+If Gurobi is installed, **the Jacobian is ordered optimally with an exact method, 
+based on integer programming.** For the same system that was shown in the 
 :ref:`first picture <spiked-form>`, we get an optimal ordering that yields a 4x4 
-reduced system. The suboptimal ordering that was shown on the top of this page 
-(obtained with the heuristic method) gives a 5x5 reduced system. The integer 
-programming approach does not need or use the block structure which was given 
-with the blue lines in the first picture; here the blue lines are absent.
+reduced system. The suboptimal ordering shown in the first picture gives a 5x5 
+reduced system, and was obtained with the heuristic 
+method detailed in the next section. **The integer programming approach does not 
+need or use the block structure** which was given with the blue lines in the first
+picture; here the blue lines are absent.
 
 .. image:: ./pics/OptimalTearing.png
    :alt: Optimal tearing, obtained with integer programming.
@@ -138,8 +142,8 @@ with the blue lines in the first picture; here the blue lines are absent.
 
 Technical systems can be partitioned into smaller blocks along the equipment 
 boundaries in a fairly natural way. We call this partitioning the 
-**natural block structure**. The implemented tearing heuristic first orders the 
-blocks, then the equations within each block. This is how the 
+*natural block structure*. **The implemented tearing heuristic first orders the 
+blocks, then the equations within each block.** This is how the 
 :ref:`first picture <spiked-form>` with the spiked form was obtained. For your 
 convenience, exactly the same picture is shown again below.
 
@@ -154,11 +158,13 @@ convenience, exactly the same picture is shown again below.
 6. Code generation after tearing
 --------------------------------
 
+**Our ultimate goal is to reduce a large, sparse system of equations to a small
+one.**
 `AMPL <http://en.wikipedia.org/wiki/AMPL>`_
 code is written out in such a way that the variables can be eliminated as 
-desired. After the elimination, the reduced system has as many variables and 
-equations as the number of spike columns. An AMPL code snippet is shown 
-below from our running :file:`demo` example. ::
+desired. After the elimination, **the reduced system has as many variables and 
+equations as the number of spike columns.** An AMPL code snippet is shown 
+below, generated with the demo application. ::
 
     # Unit
     # Tears: condenser.divider.zeta (v19)
@@ -177,15 +183,15 @@ below from our running :file:`demo` example. ::
     eq_25: v25 = v14;  # distillateSink.inlet.f[1] = condenser.divider.outlet[1].f[1]
     eq_26: v26 = v15;  # distillateSink.inlet.f[2] = condenser.divider.outlet[1].f[2]
 
-In this code snippet, equations ``eq_14``--``eq_20`` and variables 
+In the above code snippet, equations ``eq_14``--``eq_20`` and variables 
 ``v14``--``v20`` correspond to :ref:`the third block on the diagonal <OrderingWithBlocks>`, 
 starting counting at the top left corner. Variable ``v19`` corresponds to the 
 spike column of this third block. Equations ``eq_21``--``eq_26`` and 
 variables ``v21``--``v26`` correspond to the fourth diagonal block with only 
 black entries on its diagonal.
 
-Executable Python code is also emitted; it only serves for cross-checking 
-correctness.
+**Executable Python code is also emitted for evaluating the reduced system.** The 
+Pyton code only serves for cross-checking correctness.
 
 --------------------------------------------------------------------------------
 
@@ -197,11 +203,11 @@ Future work
 Improving numerical stability
 -----------------------------
 
-Tearing can yield small but very ill-conditioned systems; as a consequence, the 
+**Tearing can yield small but very ill-conditioned systems**; as a consequence, the 
 final reduced systems can be notoriously difficult or even impossible to solve. 
-Our recent publications `[1] <http://dx.doi.org/10.1002/aic.14305>`_ and
+**Our recent publications** `[1] <http://dx.doi.org/10.1002/aic.14305>`_ **and**
 `[2] <http://www.mat.univie.ac.at/%7Eneum/ms/maniSol.pdf>`_  
-show *how* this well-known numerical issue of tearing can be resolved. The cost 
+**show how this well-known numerical issue of tearing can be resolved.** The cost 
 of the improved numerical stability is the significantly increased computation 
 time. Our pilot Java implementation has shown that it is crucial
     
@@ -211,7 +217,7 @@ time. Our pilot Java implementation has shown that it is crucial
   - to generate C++ source code for efficient evaluation of the subproblems
     (the residual and the Jacobian of the blocks),
     
-  - and that the generated source code works with user-defined data types.
+  - that the generated source code works with user-defined data types.
 
 Creating a Python prototype implementation that meets the above requirements
 is the next item on the agenda.
@@ -249,7 +255,8 @@ the following Python code is generated (hand-edited to improve readability) ::
     u4 = 3.0 * u3  # df/dx = 3*exp(3*x+2*y)
     u5 = 2.0 * u3  # df/dy = 2*exp(3*x+2*y)
 
-This code is already automatically generated *today*. 
+**This code is already automatically generated today** with 
+the sibling package `SDOPT <https://sdopt.readthedocs.org>`_.
 
 The templated C++ version of this code will greatly benefit from code 
 optimization performed by the C++ compiler, especially from `constant folding 
