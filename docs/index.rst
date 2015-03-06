@@ -190,6 +190,27 @@ diagonal block with only black entries on its diagonal.
 **Executable Python code is also generated for evaluating the reduced system.** 
 The Pyton code only serves to cross-check correctness.
 
+
+7. Classic tearing as in the Modelica community
+------------------------------------------------
+
+
+
+8. Tearing heuristics that resemble the minimum-degree ordering
+---------------------------------------------------------------
+
+
+
+9. Tearing in the chemical engineering literature
+-------------------------------------------------
+
+
+
+.. image:: ./pics/MFES.png
+   :alt: Minimum Feedback Edge Set (MFES).
+   :align: center
+   :scale: 50%
+
 --------------------------------------------------------------------------------
 
 
