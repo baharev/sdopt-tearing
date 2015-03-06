@@ -135,8 +135,10 @@ first picture; here the blue lines are absent.
    :scale: 50%
 
 
-5. A tearing heuristic exploiting the natural block structure
--------------------------------------------------------------
+5. Hierarchical tearing heuristic
+---------------------------------
+
+.. _natural-block-structure:
 
 Technical systems can be partitioned into blocks along the equipment 
 boundaries in a fairly natural way. We call this partitioning the 
@@ -148,7 +150,7 @@ convenience, exactly the same picture is shown again below.
 .. _OrderingWithBlocks:
 
 .. image:: ./pics/SpikedForm.png
-   :alt: Tearing with the block structure.
+   :alt: Tearing with the natural block structure.
    :align: center
    :scale: 50%
 
@@ -191,9 +193,33 @@ diagonal block with only black entries on its diagonal.
 The Pyton code only serves to cross-check correctness.
 
 
-7. Classic tearing as in the Modelica community
-------------------------------------------------
+7. Classic tearing (as in the Modelica tools)
+---------------------------------------------
 
+The (undirected) bipartiate graph repersentation of the system of equations is 
+first oriented (made directed) with matching. Then the strongly connected 
+components (SCC) of this directed graph are identified. This way of identifying 
+the SCCs is also referred to as block lower triangular decompositon (BLT 
+decomposition) or Dulmage-Mendelsohn decompostion. 
+
+**After the BLT decomposition, some of the edges are torn within each SCC to 
+make the directed graph acyclic.** Greedy heuristics, for example variants of 
+Cellier's heuristic, are used to identify a tear set with small cardinality. 
+The elimination order is obtained by topological sorting.
+
+The plot below was obtained with this conventional way of tearing. The blue 
+lines partition the matrix along the SCCs. For our running example, the BLT
+decomposition gives a large block, much bigger than those obtained by 
+partitioning along the equipment boundaries, see at the 
+:ref:`natural block structure <natural-block-structure>`. This is not suprising
+as the example is a distillation column. This difference between the two 
+partitioning is even more pronounced for realistic columns that are much longer
+then the one used in this demo.
+
+.. image:: ./pics/ClassicTearing.png
+   :alt: Classic tearing.
+   :align: center
+   :scale: 50%
 
 
 8. Tearing heuristics that resemble the minimum-degree ordering
@@ -201,8 +227,8 @@ The Pyton code only serves to cross-check correctness.
 
 
 
-9. Tearing in the chemical engineering literature
--------------------------------------------------
+9. Tearing as in the chemical engineering literature
+----------------------------------------------------
 
 
 
