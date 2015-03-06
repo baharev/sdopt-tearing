@@ -196,25 +196,25 @@ The Pyton code only serves to cross-check correctness.
 7. Classic tearing (as in the Modelica tools)
 ---------------------------------------------
 
-The (undirected) bipartiate graph repersentation of the system of equations is 
+The (undirected) bipartite graph representation of the system of equations is 
 first oriented (made directed) with matching. Then the strongly connected 
 components (SCC) of this directed graph are identified. This way of identifying 
-the SCCs is also referred to as block lower triangular decompositon (BLT 
-decomposition) or Dulmage-Mendelsohn decompostion. 
+the SCCs is also referred to as block lower triangular decomposition (BLT 
+decomposition) or Dulmage-Mendelsohn decomposition. 
 
 **After the BLT decomposition, some of the edges are torn within each SCC to 
 make the directed graph acyclic.** Greedy heuristics, for example variants of 
 Cellier's heuristic, are used to identify a tear set with small cardinality. 
 The elimination order is obtained by topological sorting.
 
-The plot below was obtained with this conventional way of tearing. The blue 
-lines partition the matrix along the SCCs. For our running example, the BLT
-decomposition gives a large block, much bigger than those obtained by 
-partitioning along the equipment boundaries, see at the 
-:ref:`natural block structure <natural-block-structure>`. This is not suprising
-as the example is a distillation column. This difference between the two 
-partitioning is even more pronounced for realistic columns that are much longer
-then the one used in this demo.
+The plot below was obtained with this conventional way of tearing, the 
+corresponding matrix shown in spiked form. The blue lines partition the matrix 
+along the SCCs. For our running example, the BLT decomposition gives a large 
+block, much bigger than those obtained by partitioning along the equipment 
+boundaries, see at the :ref:`natural block structure <natural-block-structure>`. 
+This is not surprising as the example is a distillation column. This difference 
+between the two partitioning is even more pronounced for realistic columns that 
+are much longer then the one used in this demo.
 
 .. image:: ./pics/ClassicTearing.png
    :alt: Classic tearing.
@@ -225,6 +225,19 @@ then the one used in this demo.
 8. Tearing heuristics that resemble the minimum-degree ordering
 ---------------------------------------------------------------
 
+Does not need any block structure.
+
+.. image:: ./pics/MindegNoLookahead.png
+   :alt: Heap-based minimum degree like ordering.
+   :align: center
+   :scale: 50%
+
+4x4, optimal
+
+.. image:: ./pics/MindegWithLookahead.png
+   :alt: Minimum degree like ordering with brute-force single lookahead.
+   :align: center
+   :scale: 50%
 
 
 9. Tearing as in the chemical engineering literature
