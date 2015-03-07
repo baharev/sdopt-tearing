@@ -9,7 +9,7 @@ Exact and heuristic methods for tearing
 =======================================
 
 A demo application is presented on this web-page, showing the capabilities
-of the novel tearing algorithms. The technical details will be published in an 
+of novel tearing algorithms. The technical details will be published in an 
 academic paper. The source code of the prototype implementation is `available on
 GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 3-clause BSD 
 license.
@@ -31,8 +31,8 @@ Sparse matrices ordered to spiked form
 
 Roughly speaking, **tearing algorithms rearrange the rows and the columns of a 
 sparse matrix in such a way that the result is "close" to a lower triangular 
-matrix.** The picture below shows a sparse matrix ordered to the so-called 
-spiked form. The matrix is of size 76x76; this can be reduced to a 5x5 matrix by 
+matrix.** A sparse matrix ordered to the so-called spiked form is shown in the 
+picture below. The matrix is of size 76x76; it can be reduced to a 5x5 matrix by 
 elimination, where 5 equals the number of spike columns, that is, columns with 
 red entries. The blue lines correspond to the equipment boundaries in the 
 technical system; the tear variables are above the diagonal, and are painted 
@@ -67,9 +67,9 @@ XML file, see under *Export > Export XML* in OMEdit.
 2. Recovering the process graph
 -------------------------------
 
-A directed graph is recovered from the flattened model: The equipments 
+A directed graph is recovered from the flattened model: **The equipments 
 correspond to the vertices of the process graph, the edges correspond to the 
-material flows. Below is the process graph of a distillation column with
+material flows.** Below is the process graph of a distillation column with
 7 stages.
 
 .. image:: ./pics/Cascade.png
@@ -97,7 +97,7 @@ The picture below shows the expression tree for the equation: ::
 
     y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1]).
     
-.. image:: ./pics/ExprTree2.png
+.. image:: ./pics/ExprTree.png
    :alt: Expression Tree in SymPy.
    :align: center
    :scale: 75%
@@ -116,18 +116,18 @@ were the gray entries in the :ref:`first picture <spiked-form>`.
 
 **There is no clear objective for tearing. A common choice is to minimize the 
 size of the final reduced system,** or in other words, to minimize the number of 
-spike columns. Although this objective is questionable (it ignores 
-numerical stability for example), it nevertheless makes the meaning of optimal 
+spike columns. Although this objective is questionable (it ignores numerical 
+stability for example), it nevertheless makes the meaning of optimal 
 mathematically well-defined.
 
-If Gurobi is installed, **the Jacobian is ordered optimally with an exact method, 
-based on integer programming.** For the same system that was shown in the 
-:ref:`first picture <spiked-form>`, we get an optimal ordering that yields a 4x4 
-reduced system. The suboptimal ordering shown in the first picture gives a 5x5 
-reduced system, and was obtained with the heuristic 
-method detailed in the next section. **The integer programming approach does not 
-need or use the block structure** which was given with the blue lines in the 
-first picture; here the blue lines are absent.
+If Gurobi is installed, **the Jacobian is ordered optimally with an exact 
+method, based on integer programming.** For the same system that was shown in 
+the :ref:`first picture <spiked-form>`, we get an optimal ordering that yields a 
+4x4 reduced system. The suboptimal ordering shown in the first picture gives a 
+5x5 reduced system, and was obtained with the heuristic method detailed in the 
+next section. **The integer programming approach does not need or use the block 
+structure** which was given with the blue lines in the first picture; here the 
+blue lines are absent.
 
 .. image:: ./pics/OptimalTearing.png
    :alt: Optimal tearing, obtained with integer programming.
@@ -140,17 +140,17 @@ first picture; here the blue lines are absent.
 
 .. _natural-block-structure:
 
-Technical systems can be partitioned into blocks along the equipment 
-boundaries in a fairly natural way. We call this partitioning the 
-*natural block structure*. **The implemented tearing heuristic first orders the 
-blocks, then the equations within each block.** This is how the 
-:ref:`first picture <spiked-form>` with the spiked form was obtained. For your 
-convenience, exactly the same picture is shown again below.
+Technical systems can be partitioned into blocks along the equipment boundaries 
+in a fairly natural way. We call this partitioning the *natural block 
+structure*. **The implemented tearing heuristic first orders the blocks, then 
+the equations within each block.** This is how the :ref:`first picture 
+<spiked-form>` with the spiked form was obtained. Exactly the same picture is 
+shown below for your convenience.
 
 .. _OrderingWithBlocks:
 
 .. image:: ./pics/SpikedForm.png
-   :alt: Tearing with the natural block structure.
+   :alt: Hierarchical tearing with the natural block structure.
    :align: center
    :scale: 50%
 
@@ -165,7 +165,7 @@ desired. After the elimination, **the reduced system has as many variables and
 equations as the number of spike columns.** An AMPL code snippet is shown 
 below, generated with the demo application. ::
 
-    # Unit
+    # Block
     # Tears: condenser.divider.zeta (v19)
     eq_14: v14 = v12*v19;  # condenser.divider.outlet[1].f[1] = condenser.divider.inlet[1].f[1]*condenser.divider.zeta
     eq_15: v15 = v13*v19;  # condenser.divider.outlet[1].f[2] = condenser.divider.inlet[1].f[2]*condenser.divider.zeta
@@ -190,31 +190,33 @@ In the above code snippet, equations ``eq_14``--``eq_20`` and variables
 diagonal block with only black entries on its diagonal.
 
 **Executable Python code is also generated for evaluating the reduced system.** 
-The Pyton code only serves to cross-check correctness.
+The Python code only serves to cross-check correctness.
 
 
 7. Classic tearing (as in the Modelica tools)
 ---------------------------------------------
 
 The (undirected) bipartite graph representation of the system of equations is 
-first oriented (made directed) with matching. Then the strongly connected 
+first oriented (made directed) with matching. Then, the strongly connected 
 components (SCC) of this directed graph are identified. This way of identifying 
 the SCCs is also referred to as block lower triangular decomposition (BLT 
 decomposition) or Dulmage-Mendelsohn decomposition. 
 
 **After the BLT decomposition, some of the edges are torn within each SCC to 
-make the directed graph acyclic.** Greedy heuristics, for example variants of 
-Cellier's heuristic, are used to identify a tear set with small cardinality. 
-The elimination order is obtained by topological sorting.
+make the directed graph acyclic.** Greedy heuristics, for example `variants of 
+Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`, are used to 
+identify a tear set with small cardinality. The elimination order can obtained 
+by topological sorting.
 
-The plot below was obtained with this conventional way of tearing, the 
-corresponding matrix shown in spiked form. The blue lines partition the matrix 
-along the SCCs. For our running example, the BLT decomposition gives a large 
-block, much bigger than those obtained by partitioning along the equipment 
-boundaries, see at the :ref:`natural block structure <natural-block-structure>`. 
-This is not surprising as the example is a distillation column. This difference 
-between the two partitioning is even more pronounced for realistic columns that 
-are much longer then the one used in this demo.
+The plot below was obtained with this conventional way of tearing; the 
+corresponding matrix is shown in spiked form. The blue lines partition the 
+matrix along the SCCs. For our running example, the BLT decomposition gives a 
+large block, significantly larger than those obtained by partitioning along the 
+equipment boundaries, see at the :ref:`natural block structure 
+<natural-block-structure>`. This is not surprising, as the example is a 
+distillation column. This difference between the two partitionings is even more 
+pronounced for realistic columns, that are much longer than the one used in this
+demo application.
 
 .. image:: ./pics/ClassicTearing.png
    :alt: Classic tearing.
@@ -222,9 +224,10 @@ are much longer then the one used in this demo.
    :scale: 50%
 
 
-8. Tearing heuristics that resemble the minimum-degree ordering
+8. Tearing heuristics that resemble the minimum degree ordering
 ---------------------------------------------------------------
 
+http://dx.doi.org/10.1007/BF02025533
 Does not need any block structure.
 
 .. image:: ./pics/MindegNoLookahead.png
@@ -255,6 +258,14 @@ Does not need any block structure.
 
 Future work
 ===========
+
+
+Establish a benchmark suite
+---------------------------
+
+
+Integrate to Modelica tools
+---------------------------
 
 
 Improving numerical stability
