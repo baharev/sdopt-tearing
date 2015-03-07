@@ -39,10 +39,12 @@ technical system; the tear variables are above the diagonal, and are painted
 red; the gray squares are "forbidden" variables (no explicit elimination 
 possible). The elimination is performed along the diagonal.
 
-.. image:: ./pics/SpikedForm.png
+.. figure:: ./pics/SpikedForm.png
    :alt: A sparse matrix ordered to the so-called spiked form.
    :align: center
    :scale: 50%
+   
+   A sparse matrix ordered to the so-called spiked form
 
 --------------------------------------------------------------------------------
 
@@ -63,20 +65,21 @@ flattened model as input.** The `OpenModelica Compiler
 <https://openmodelica.org/openmodelicaworld/tools>`_ can also emit the necessary 
 XML file, see under *Export > Export XML* in OMEdit.
 
+--------------------------------------------------------------------------------
 
 2. Recovering the process graph
 -------------------------------
 
 A directed graph is recovered from the flattened model: **The equipments 
 correspond to the vertices of the process graph, the edges correspond to the 
-material flows.** Below is the process graph of a distillation column with
-7 stages.
+material flows.**
 
-.. image:: ./pics/Cascade.png
-   :alt: Digraph representation of a distillation column.
+.. figure:: ./pics/Cascade.png
+   :alt: The process graph of a distillation column with 7 stages.
    :align: center
    :scale: 75%
 
+   The process graph of a distillation column with 7 stages
 
 **The process graph is used for partitioning the Jacobian of the system of 
 equations:** This is how the blue lines in the :ref:`first picture 
@@ -88,19 +91,20 @@ are called ``outlet``. There is an ongoing discussion with the JModelica
 developers on reconstructing the process graph in a generic way, without 
 assuming any naming convention for the connectors.
 
+--------------------------------------------------------------------------------
 
 3. Symbolic manipulation of the equations
 -----------------------------------------
 
-The equations are given as binary expression trees in the input file. 
-The picture below shows the expression tree for the equation: ::
-
-    y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1]).
+The equations are given as binary expression trees in the input file.
     
-.. image:: ./pics/ExprTree.png
-   :alt: Expression Tree in SymPy.
+.. figure:: ./pics/ExprTree.png
+   :alt: Example of an expression tree.
    :align: center
    :scale: 75%
+   
+   The expression tree of ``y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1])``
+
 
 The expression tree of the equations are `symbolically manipulated 
 <http://docs.sympy.org/latest/tutorial/manipulation.html>`_  with `SymPy 
@@ -110,6 +114,7 @@ the rearrangement of ``x*y=1`` to ``y=1/x`` if ``x`` may potentially take on the
 value ``0``. Unsafe eliminations are automatically recognized and avoided; these 
 were the gray entries in the :ref:`first picture <spiked-form>`.
 
+--------------------------------------------------------------------------------
 
 4. Optimal tearing
 ------------------
@@ -129,11 +134,14 @@ next section. **The integer programming approach does not need or use the block
 structure** which was given with the blue lines in the first picture; here the 
 blue lines are absent.
 
-.. image:: ./pics/OptimalTearing.png
-   :alt: Optimal tearing, obtained with integer programming.
+.. figure:: ./pics/OptimalTearing.png
+   :alt: Optimal order, obtained with integer programming.
    :align: center
    :scale: 50%
+   
+   Optimal order, obtained with integer programming
 
+--------------------------------------------------------------------------------
 
 5. Hierarchical tearing heuristic
 ---------------------------------
@@ -149,11 +157,14 @@ shown below for your convenience.
 
 .. _OrderingWithBlocks:
 
-.. image:: ./pics/SpikedForm.png
+.. figure:: ./pics/SpikedForm.png
    :alt: Hierarchical tearing with the natural block structure.
    :align: center
    :scale: 50%
+   
+   Hierarchical tearing with the natural block structure
 
+--------------------------------------------------------------------------------
 
 6. AMPL and Python code generation after tearing
 ------------------------------------------------
@@ -192,55 +203,73 @@ diagonal block with only black entries on its diagonal.
 **Executable Python code is also generated for evaluating the reduced system.** 
 The Python code only serves to cross-check correctness.
 
+--------------------------------------------------------------------------------
 
-7. Classic tearing (as in the Modelica tools)
----------------------------------------------
+7. Classic tearing as seen in Modelica tools
+--------------------------------------------
 
 The (undirected) bipartite graph representation of the system of equations is 
 first oriented (made directed) with matching. Then, the strongly connected 
 components (SCC) of this directed graph are identified. This way of identifying 
-the SCCs is also referred to as block lower triangular decomposition (BLT 
-decomposition) or Dulmage-Mendelsohn decomposition. 
+the SCCs is also referred to as **block lower triangular decomposition (BLT 
+decomposition)** or Dulmage-Mendelsohn decomposition. 
 
 **After the BLT decomposition, some of the edges are torn within each SCC to 
-make the directed graph acyclic.** Greedy heuristics, for example `variants of 
-Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`, are used to 
-identify a tear set with small cardinality. The elimination order can obtained 
-by topological sorting.
+make the SCC acyclic.** Greedy heuristics, for example `variants of 
+Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, are used to 
+identify a tear set with small cardinality. The elimination order can be 
+obtained by topological sorting.
 
-The plot below was obtained with this conventional way of tearing; the 
-corresponding matrix is shown in spiked form. The blue lines partition the 
-matrix along the SCCs. For our running example, the BLT decomposition gives a 
-large block, significantly larger than those obtained by partitioning along the 
-equipment boundaries, see at the :ref:`natural block structure 
-<natural-block-structure>`. This is not surprising, as the example is a 
-distillation column. This difference between the two partitionings is even more 
-pronounced for realistic columns, that are much longer than the one used in this
-demo application.
-
-.. image:: ./pics/ClassicTearing.png
-   :alt: Classic tearing.
+.. figure:: ./pics/ClassicTearing.png
+   :alt: Spiked form, obtained with classic tearing.
    :align: center
    :scale: 50%
+   
+   Spiked form, obtained with classic tearing
 
 
-8. Tearing heuristics that resemble the minimum degree ordering
----------------------------------------------------------------
+The spiked form in the above picture was obtained with this classic way of 
+tearing. The blue lines partition the matrix along the SCCs. For our running 
+example, the BLT decomposition gives one large block, significantly larger than 
+the largest one obtained by partitioning along the equipment boundaries, see at 
+the :ref:`natural block structure <natural-block-structure>`. This is not 
+surprising, as the example is a distillation column: The size of the largest 
+block that the BLT decomposition gives grows linearly with the size of the 
+column. For a realistic column, this can become problematic, whereas the size of 
+the largest block does not change with the size of the column if the natural 
+block structure is used for partitioning.
 
-http://dx.doi.org/10.1007/BF02025533
-Does not need any block structure.
+--------------------------------------------------------------------------------
 
-.. image:: ./pics/MindegNoLookahead.png
-   :alt: Heap-based minimum degree like ordering.
+
+8. Tearing heuristics that resemble the minimum degree algorithm
+----------------------------------------------------------------
+
+A greedy tearing heuristic has been implemented, inspired by `algorithm (2.3) of 
+Fletcher and Hall <http://dx.doi.org/10.1007/BF02025533>`_. The heuristic
+resembles the `minimum degree algorithm 
+<http://en.wikipedia.org/wiki/Minimum_degree_algorithm>`_, but it also
+works for highly unsymmetric matrices. The implemented heuristic does not need 
+or use any block structure. When breaking ties in the greedy choice, a lookahead
+step can improve the quality of the ordering.
+
+.. figure:: ./pics/MindegNoLookahead.png
+   :alt: Spiked form obtained with the greedy tearing heuristic, no lookahead.
    :align: center
    :scale: 50%
+   
+   Spiked form obtained with the greedy tearing heuristic, no lookahead
 
-4x4, optimal
 
-.. image:: ./pics/MindegWithLookahead.png
-   :alt: Minimum degree like ordering with brute-force single lookahead.
+.. figure:: ./pics/MindegWithLookahead.png
+   :alt: Spiked form obtained with the greedy tearing heuristic, with lookahead.
    :align: center
    :scale: 50%
+   
+   Spiked form obtained with the greedy tearing heuristic, happens to be optimal
+   with lookahead
+
+--------------------------------------------------------------------------------
 
 
 9. Tearing as in the chemical engineering literature
@@ -290,6 +319,7 @@ Our pilot Java implementation has shown that it is crucial
 The next item on the agenda is to create a Python prototype implementation that 
 meets all these requirements.
 
+--------------------------------------------------------------------------------
 
 Source code generation for reverse mode automatic differentiation
 -----------------------------------------------------------------
@@ -333,8 +363,9 @@ I expect the generated assembly code to be as good as hand-written.
 
 --------------------------------------------------------------------------------
 
-.. toctree::
-   :maxdepth: 2
+..
+    .. toctree::
+    :maxdepth: 2
 
 
 
