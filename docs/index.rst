@@ -103,7 +103,9 @@ The equations are given as binary expression trees in the input file.
    :align: center
    :scale: 75%
    
-   The expression tree of ``y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1])``
+   The expression tree of:
+   
+   ``y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1])``
 
 
 The expression tree of the equations are `symbolically manipulated 
@@ -205,8 +207,8 @@ The Python code only serves to cross-check correctness.
 
 --------------------------------------------------------------------------------
 
-7. Classic tearing as seen in Modelica tools
---------------------------------------------
+7. Tearing as seen in Modelica tools
+------------------------------------
 
 The (undirected) bipartite graph representation of the system of equations is 
 first oriented (made directed) with matching. Then, the strongly connected 
@@ -217,24 +219,23 @@ decomposition)** or Dulmage-Mendelsohn decomposition.
 **After the BLT decomposition, some of the edges are torn within each SCC to 
 make the SCC acyclic.** Greedy heuristics, for example `variants of 
 Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, are used to 
-identify a tear set with small cardinality. The elimination order can be 
-obtained by topological sorting.
+identify a tear set with small cardinality.
 
 .. figure:: ./pics/ClassicTearing.png
-   :alt: Spiked form, obtained with classic tearing.
+   :alt: Spiked form, obtained with tearing as seen in Modelica tools
    :align: center
    :scale: 50%
    
-   Spiked form, obtained with classic tearing
+   Spiked form, obtained with tearing as seen in Modelica tools
 
 
-The spiked form in the above picture was obtained with this classic way of 
-tearing. The blue lines partition the matrix along the SCCs. For our running 
-example, the BLT decomposition gives one large block, significantly larger than 
-the largest one obtained by partitioning along the equipment boundaries, see at 
-the :ref:`natural block structure <natural-block-structure>`. This is not 
+The spiked form in the above picture was obtained with this way of tearing. The 
+blue lines partition the matrix along the SCCs. For our running example, the BLT 
+decomposition gives one large block, significantly larger than the largest one 
+obtained by partitioning along the equipment boundaries, see at the 
+:ref:`natural block structure <natural-block-structure>`. This is not 
 surprising, as the example is a distillation column: The size of the largest 
-block that the BLT decomposition gives grows linearly with the size of the 
+block yielded by the BLT decomposition grows linearly with the size of the 
 column. For a realistic column, this can become problematic, whereas the size of 
 the largest block does not change with the size of the column if the natural 
 block structure is used for partitioning.
@@ -275,12 +276,30 @@ step can improve the quality of the ordering.
 9. Tearing as in the chemical engineering literature
 ----------------------------------------------------
 
+Roughly speaking, the equipments are implemented as black boxes in professional 
+chemical engineering simulators. In the so-called simulation mode, the output of
+an equipment is quickly computed from its input with a method specialized for 
+that particular equipment. However, computing the input of an equipment given 
+its output can be computationally demanding. Therefore, the goal of tearing in 
+this case is to minimize the number of equipments for which the input has to be 
+computed from the output.
 
+In abstract terms, it is equivalent to `minimum feedback edge set (MFES)
+problem <http://en.wikipedia.org/wiki/Feedback_arc_set>`_. Compared to the 
+tearing method of Modelica tools, the differences are: (1) the graph is already 
+oriented (directed), and (2) the nodes of the graph correspond to small systems 
+of equations in the MFES problem.
 
-.. image:: ./pics/MFES.png
-   :alt: Minimum Feedback Edge Set (MFES).
+.. figure:: ./pics/MFES.png
+   :alt: The minimum feedback edge set of the directed graph is shown in red.
    :align: center
    :scale: 50%
+   
+   The minimum feedback edge set of the directed graph is shown in red
+
+A greedy heuristic has been implemented to compute a feedback edge set of 
+weighted directed graphs. If Gurobi is available, an exact algorithm can also 
+be executed to solve the minimum feedback edge set with integer programming.
 
 --------------------------------------------------------------------------------
 
