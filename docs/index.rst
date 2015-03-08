@@ -85,6 +85,8 @@ material flows.**
 equations:** This is how the blue lines in the :ref:`first picture 
 <spiked-form>` were obtained.
 
+.. _inlet-outlet-naming-convention:
+
 At the moment, recovering the directed edges is possible only if the input 
 connectors of the equipments are called ``inlet``, and their output connectors 
 are called ``outlet``. There is an ongoing discussion with the JModelica 
@@ -145,10 +147,10 @@ blue lines are absent.
 
 --------------------------------------------------------------------------------
 
-5. Hierarchical tearing heuristic
----------------------------------
-
 .. _natural-block-structure:
+
+5. A hierarchical tearing heuristic exploiting the natural block structure
+--------------------------------------------------------------------------
 
 Technical systems can be partitioned into blocks along the equipment boundaries 
 in a fairly natural way. We call this partitioning the *natural block 
@@ -207,6 +209,8 @@ The Python code only serves to cross-check correctness.
 
 --------------------------------------------------------------------------------
 
+.. _tearing-in-Modelica:
+
 7. Tearing as seen in Modelica tools
 ------------------------------------
 
@@ -216,10 +220,10 @@ components (SCC) of this directed graph are identified. This way of identifying
 the SCCs is also referred to as **block lower triangular decomposition (BLT 
 decomposition)** or Dulmage-Mendelsohn decomposition. 
 
-**After the BLT decomposition, some of the edges are torn within each SCC to 
+**After the BLT decomposition, a subset of the edges are torn within each SCC to 
 make the SCC acyclic.** Greedy heuristics, for example `variants of 
 Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, are used to 
-identify a tear set with small cardinality.
+find a tear set with small cardinality.
 
 .. figure:: ./pics/ClassicTearing.png
    :alt: Spiked form, obtained with tearing as seen in Modelica tools
@@ -229,16 +233,16 @@ identify a tear set with small cardinality.
    Spiked form, obtained with tearing as seen in Modelica tools
 
 
-The spiked form in the above picture was obtained with this way of tearing. The 
-blue lines partition the matrix along the SCCs. For our running example, the BLT 
-decomposition gives one large block, significantly larger than the largest one 
-obtained by partitioning along the equipment boundaries, see at the 
-:ref:`natural block structure <natural-block-structure>`. This is not 
-surprising, as the example is a distillation column: The size of the largest 
-block yielded by the BLT decomposition grows linearly with the size of the 
-column. For a realistic column, this can become problematic, whereas the size of 
-the largest block does not change with the size of the column if the natural 
-block structure is used for partitioning.
+The spiked form in the picture was obtained with the tearing heuristic 
+outlined above. The blue lines partition the matrix along the SCCs. For our 
+running example, the BLT decomposition gives one large block, significantly 
+larger than the largest one obtained by partitioning along the equipment 
+boundaries, see at the :ref:`natural block structure <natural-block-structure>`. 
+This is not surprising, as the example is a distillation column: The size of the 
+largest block yielded by the BLT decomposition grows linearly with the size of 
+the column. For a realistic column, this can become problematic; in contrast, 
+the size of the largest block does not change with the size of the column if the 
+natural block structure is used for partitioning.
 
 --------------------------------------------------------------------------------
 
@@ -273,33 +277,35 @@ step can improve the quality of the ordering.
 --------------------------------------------------------------------------------
 
 
-9. Tearing as in the chemical engineering literature
-----------------------------------------------------
+9. Tearing in chemical engineering
+----------------------------------
 
-Roughly speaking, the equipments are implemented as black boxes in professional 
-chemical engineering simulators. In the so-called simulation mode, the output of
-an equipment is quickly computed from its input with a method specialized for 
-that particular equipment. However, computing the input of an equipment given 
-its output can be computationally demanding. Therefore, the goal of tearing in 
-this case is to minimize the number of equipments for which the input has to be 
-computed from the output.
+..
+    When a professional chemical engineering simulator is run in sequential modular 
+    (SM) mode, the output of an equipment is quickly computed from its input with a 
+    numerical method specialized for that particular equipment. However,
+    computing the input of an equipment given its output can be computationally 
+    demanding because the specialized method was optimized for the . Therefore, 
+    the goal of tearing in this case is to minimize the number of equipments for 
+    which the input has to be computed from the output.
 
-In abstract terms, it is equivalent to `minimum feedback edge set (MFES)
-problem <http://en.wikipedia.org/wiki/Feedback_arc_set>`_. Compared to the 
-tearing method of Modelica tools, the differences are: (1) the graph is already 
-oriented (directed), and (2) the nodes of the graph correspond to small systems 
-of equations in the MFES problem.
+**In abstract terms, this kind of tearing is equivalent to the** `minimum 
+feedback edge set (MFES) problem 
+<http://en.wikipedia.org/wiki/Feedback_arc_set>`_, also known as the maximum 
+acyclic subgraph problem. Compared to :ref:`the tearing methods of 
+Modelica tools <tearing-in-Modelica>`, the differences are: (1) the graph is 
+already oriented (directed), and (2) the nodes of the graph correspond to small 
+systems of equations in the MFES problem.
 
 .. figure:: ./pics/MFES.png
    :alt: The minimum feedback edge set of the directed graph is shown in red.
    :align: center
    :scale: 50%
    
-   The minimum feedback edge set of the directed graph is shown in red
+   The 3 red edges form a minimum feedback edge set of the directed graph
 
-A greedy heuristic has been implemented to compute a feedback edge set of 
-weighted directed graphs. If Gurobi is available, an exact algorithm can also 
-be executed to solve the minimum feedback edge set with integer programming.
+**Both a greedy heuristic and an exact algorithm has been implemented to solve
+the feedback edge set problem for weighted directed graphs.**
 
 --------------------------------------------------------------------------------
 
@@ -311,10 +317,33 @@ Future work
 Establish a benchmark suite
 ---------------------------
 
+Finding the optimal solution to tearing is NP-complete and approximation 
+resistant. Therefore, a comprehensive benchmark suite has to be established, 
+then the various heuristics can be evaluated to see which one works well in 
+practice. 
 
-Integrate to Modelica tools
----------------------------
+`The COCONUT benchmark suite
+<http://www.mat.univie.ac.at/~neum/glopt/coconut/Benchmark/Benchmark.html>`_ 
+will be used for evaluating heuristics that do not require the natural block 
+structure. 
 
+I hope to receive help from the Modelica community to establish a test set 
+where the :ref:`natural block structure <natural-block-structure>` is 
+available. Dr.-Ing. Michael Sielemann, `Modelon <http://www.modelon.com/>`_'s 
+Technical Director for Aeronautics and Space, has already offered his kind help.
+
+--------------------------------------------------------------------------------
+
+
+Integration into Modelica tools
+-------------------------------
+
+The implemented algorithms should be integrated into state-of-the-art Modelica 
+tools. At the moment, a major obstacle is the inability to recover the process 
+graph, as discussed above at the :ref:`naming convention workaround 
+<inlet-outlet-naming-convention>`.
+
+--------------------------------------------------------------------------------
 
 Improving numerical stability
 -----------------------------
