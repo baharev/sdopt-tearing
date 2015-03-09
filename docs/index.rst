@@ -63,7 +63,8 @@ compiler by calling :func:`compile_fmux`; check the :mod:`flatten` and
 :mod:`fmux_creator` modules for details. **The demo application takes the 
 flattened model as input.** The `OpenModelica Compiler 
 <https://openmodelica.org/openmodelicaworld/tools>`_ can also emit the necessary 
-XML file, see under *Export > Export XML* in OMEdit.
+XML file, see under *Export > Export XML* in OMEdit; unfortunately, it is 
+unclear how to disable alias variable elimination and tearing in this compiler.
 
 --------------------------------------------------------------------------------
 
@@ -214,16 +215,18 @@ The Python code only serves to cross-check correctness.
 7. Tearing as seen in Modelica tools
 ------------------------------------
 
-The (undirected) bipartite graph representation of the system of equations is 
-first oriented (made directed) with matching. Then, the strongly connected 
-components (SCC) of this directed graph are identified. This way of identifying 
-the SCCs is also referred to as **block lower triangular decomposition (BLT 
-decomposition)** or Dulmage-Mendelsohn decomposition. 
+First, the undirected bipartite graph representation of the system of equations 
+is oriented with `matching 
+<http://en.wikipedia.org/wiki/Matching_%28graph_theory%29>`_; in other words, 
+the undirected graph is made directed. Then, the strongly connected components 
+(SCC) of this directed graph are identified. This way of identifying the SCCs is 
+also referred to as **block lower triangular decomposition (BLT decomposition)** 
+or Dulmage-Mendelsohn decomposition. 
 
 **After the BLT decomposition, a subset of the edges are torn within each SCC to 
-make the SCC acyclic.** Greedy heuristics, for example `variants of 
-Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, are used to 
-find a tear set with small cardinality.
+make them acyclic.** Greedy heuristics, for example `variants of Cellier's 
+heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, are used to find a tear 
+set with small cardinality.
 
 .. figure:: ./pics/ClassicTearing.png
    :alt: Spiked form, obtained with tearing as seen in Modelica tools
@@ -233,30 +236,30 @@ find a tear set with small cardinality.
    Spiked form, obtained with tearing as seen in Modelica tools
 
 
-The spiked form in the picture was obtained with the tearing heuristic 
-outlined above. The blue lines partition the matrix along the SCCs. For our 
-running example, the BLT decomposition gives one large block, significantly 
-larger than the largest one obtained by partitioning along the equipment 
-boundaries, see at the :ref:`natural block structure <natural-block-structure>`. 
-This is not surprising, as the example is a distillation column: The size of the 
-largest block yielded by the BLT decomposition grows linearly with the size of 
-the column. For a realistic column, this can become problematic; in contrast, 
-the size of the largest block does not change with the size of the column if the 
-natural block structure is used for partitioning.
+The spiked form in this picture was obtained with the tearing heuristic outlined 
+just above. The blue lines partition the matrix along the SCCs. As it can be 
+seen in this picture, the BLT decomposition gave one large block for our running 
+example, significantly larger than the largest one obtained with the heuristic 
+exploiting the :ref:`natural block structure <natural-block-structure>`. This is 
+not surprising, as the example is a distillation column: With the BLT 
+decomposition, the size of the largest block is proportional to the size of the 
+column. For a realistic column, this can become problematic. If the natural 
+block structure is used for partitioning, the size of the largest block does not 
+change with the size of the column.
 
 --------------------------------------------------------------------------------
 
 
-8. Tearing heuristics that resemble the minimum degree algorithm
-----------------------------------------------------------------
+8. A greedy tearing heuristic
+-----------------------------
 
-A greedy tearing heuristic has been implemented, inspired by `algorithm (2.3) of 
-Fletcher and Hall <http://dx.doi.org/10.1007/BF02025533>`_. The heuristic
-resembles the `minimum degree algorithm 
-<http://en.wikipedia.org/wiki/Minimum_degree_algorithm>`_, but it also
-works for highly unsymmetric matrices. The implemented heuristic does not need 
-or use any block structure. When breaking ties in the greedy choice, a lookahead
-step can improve the quality of the ordering.
+**A greedy tearing heuristic has been implemented, inspired by** `algorithm 
+(2.3) of Fletcher and Hall <http://dx.doi.org/10.1007/BF02025533>`_. The 
+heuristic resembles the `minimum degree algorithm 
+<http://en.wikipedia.org/wiki/Minimum_degree_algorithm>`_, but it also works for 
+highly unsymmetric matrices. The implemented heuristic does not need or use any 
+block structure. When breaking ties in the greedy choice, **a lookahead step can 
+improve the quality of the ordering**.
 
 .. figure:: ./pics/MindegNoLookahead.png
    :alt: Spiked form obtained with the greedy tearing heuristic, no lookahead.
@@ -298,7 +301,7 @@ already oriented (directed), and (2) the nodes of the graph correspond to small
 systems of equations in the MFES problem.
 
 .. figure:: ./pics/MFES.png
-   :alt: The minimum feedback edge set of the directed graph is shown in red.
+   :alt: The 3 red edges form a minimum feedback edge set of the directed graph.
    :align: center
    :scale: 50%
    
@@ -314,23 +317,20 @@ Future work
 ===========
 
 
-Establish a benchmark suite
----------------------------
+Establishing a benchmark suite
+------------------------------
 
 Finding the optimal solution to tearing is NP-complete and approximation 
-resistant. Therefore, a comprehensive benchmark suite has to be established, 
-then the various heuristics can be evaluated to see which one works well in 
-practice. 
-
-`The COCONUT benchmark suite
+resistant. Therefore, **a comprehensive benchmark suite has to be established,**
+and then the various heuristics can be evaluated to see which one works well in 
+practice. `The COCONUT benchmark suite 
 <http://www.mat.univie.ac.at/~neum/glopt/coconut/Benchmark/Benchmark.html>`_ 
 will be used for evaluating heuristics that do not require the natural block 
-structure. 
-
-I hope to receive help from the Modelica community to establish a test set 
-where the :ref:`natural block structure <natural-block-structure>` is 
-available. Dr.-Ing. Michael Sielemann, `Modelon <http://www.modelon.com/>`_'s 
-Technical Director for Aeronautics and Space, has already offered his kind help.
+structure. **I hope to receive help from the Modelica community to establish a 
+test set** where the :ref:`natural block structure <natural-block-structure>` is 
+available. Dr.-Ing. Michael Sielemann (Technical Director for Aeronautics and 
+Space at `Modelon <http://www.modelon.com/>`_) has already offered his kind 
+help.
 
 --------------------------------------------------------------------------------
 
@@ -339,9 +339,9 @@ Integration into Modelica tools
 -------------------------------
 
 The implemented algorithms should be integrated into state-of-the-art Modelica 
-tools. At the moment, a major obstacle is the inability to recover the process 
-graph, as discussed above at the :ref:`naming convention workaround 
-<inlet-outlet-naming-convention>`.
+tools. At the moment, **a major obstacle is the inability to recover the process 
+graph in the general case,** as discussed above at the 
+:ref:`naming convention workaround <inlet-outlet-naming-convention>`.
 
 --------------------------------------------------------------------------------
 
@@ -354,10 +354,14 @@ solve. **Our recent publications** `[1] <http://dx.doi.org/10.1002/aic.14305>`_
 **and** `[2] <http://www.mat.univie.ac.at/%7Eneum/ms/maniSol.pdf>`_  **show how 
 this well-known numerical issue of tearing can be resolved.** The cost of the 
 improved numerical stability is the significantly increased computation time. 
+
+.. _handling-subproblems:
+
 Our pilot Java implementation has shown that it is crucial
     
   - to design a convenient API for subproblem selection (roughly speaking: 
-    to be able to work with arbitrary number of diagonal blocks), 
+    to be able to work with arbitrary number of diagonal blocks, ordered
+    sequentially), 
     
   - to generate C++ source code for efficient evaluation of the subproblems
     (the residual and the Jacobian of the blocks),
@@ -373,16 +377,18 @@ Source code generation for reverse mode automatic differentiation
 -----------------------------------------------------------------
 
 The Jacobian is required when solving the subproblems with a solver like `IPOPT 
-<https://projects.coin-or.org/Ipopt>`_. I am not aware of any `automatic 
-differentiation <http://en.wikipedia.org/wiki/Automatic_differentiation>`_ 
-package that would fulfill all the requirements listed above, so I have set out 
-to write my own. The primary challenge is to design an API that makes it easy to 
-work with subproblems, and that makes the interfacing with various solvers only 
-moderately painful. Generating source code for evaluating the Jacobian of the 
-subproblems is certainly not the main difficulty here.
+<https://projects.coin-or.org/Ipopt>`_.
+**Generating C++ source code for evaluating the Jacobian of the subproblems is 
+certainly not the main difficulty here:** The primary challenge is to design an 
+API that makes it easy to work with subproblems, and that makes the interfacing 
+with various solvers only moderately painful.
 
-The diagonal blocks of the Jacobian will be obtained with reverse mode automatic
-differentiation. For example, for the expression ::
+**I am not aware of any** `automatic 
+differentiation <http://en.wikipedia.org/wiki/Automatic_differentiation>`_ 
+**package that would fulfill the requirements** :ref:`listed above 
+<handling-subproblems>`, so I have set out to write my own. The diagonal blocks 
+of the Jacobian will be obtained with reverse mode automatic differentiation. 
+For example, for the expression ::
 
     exp(3*x+2*y)+4*z 
 
