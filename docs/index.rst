@@ -80,7 +80,8 @@ material flows.**
    :align: center
    :scale: 75%
 
-   The process graph of a distillation column with 7 stages
+   The process graph of a distillation column with 7 stages (click on the image
+   to enlarge it)
 
 **The process graph is used for partitioning the Jacobian of the system of 
 equations:** This is how the blue lines in the :ref:`first picture 
