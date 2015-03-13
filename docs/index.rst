@@ -10,9 +10,9 @@ Exact and heuristic methods for tearing
 
 A demo application is presented on this web-page, showing the capabilities
 of novel tearing algorithms. The technical details will be published in an 
-academic paper. The source code of the prototype implementation is `available on
-GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 3-clause BSD 
-license.
+academic paper. The source code of the prototype implementation will be 
+`available on GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 
+3-clause BSD license as soon as the paper has been submitted.
 
 **Software requirements**. The code has been tested with Python 2.7 and 3.4. 
 The :mod:`six`, :mod:`networkx`, and :mod:`sympy` packages are necessary; 
