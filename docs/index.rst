@@ -34,7 +34,7 @@ sparse matrix in such a way that the result is "close" to a lower triangular
 matrix.** A sparse matrix ordered to the so-called spiked form is shown in the 
 picture below. The matrix is of size 76x76; it can be reduced to a 5x5 matrix by 
 elimination, where 5 equals the number of spike columns, that is, columns with 
-red entries. The blue lines correspond to the equipment boundaries in the 
+red entries. The blue lines correspond to the device boundaries in the 
 technical system; the tear variables are above the diagonal, and are painted 
 red; the gray squares are "forbidden" variables (no explicit elimination 
 possible). The elimination is performed along the diagonal.
@@ -71,7 +71,7 @@ unclear how to disable alias variable elimination and tearing in this compiler.
 2. Recovering the process graph
 -------------------------------
 
-A directed graph is recovered from the flattened model: **The equipments 
+A directed graph is recovered from the flattened model: **The devices 
 correspond to the vertices of the process graph, the edges correspond to the 
 material flows.**
 
@@ -90,7 +90,7 @@ equations:** This is how the blue lines in the :ref:`first picture
 .. _inlet-outlet-naming-convention:
 
 At the moment, recovering the directed edges is possible only if the input 
-connectors of the equipments are called ``inlet``, and their output connectors 
+connectors of the devices are called ``inlet``, and their output connectors 
 are called ``outlet``. There is an ongoing discussion with the JModelica 
 developers on reconstructing the process graph in a generic way, without 
 assuming any naming convention for the connectors.
@@ -154,7 +154,7 @@ blue lines are absent.
 5. A hierarchical tearing heuristic exploiting the natural block structure
 --------------------------------------------------------------------------
 
-Technical systems can be partitioned into blocks along the equipment boundaries 
+Technical systems can be partitioned into blocks along the device boundaries 
 in a fairly natural way. We call this partitioning the *natural block 
 structure*. **The implemented tearing heuristic first orders the blocks, then 
 the equations within each block.** This is how the :ref:`first picture 
@@ -286,11 +286,11 @@ improve the quality of the ordering**.
 
 ..
     When a professional chemical engineering simulator is run in sequential modular 
-    (SM) mode, the output of an equipment is quickly computed from its input with a 
-    numerical method specialized for that particular equipment. However,
-    computing the input of an equipment given its output can be computationally 
+    (SM) mode, the output of a device is quickly computed from its input with a 
+    numerical method specialized for that particular device. However,
+    computing the input of a device given its output can be computationally 
     demanding because the specialized method was optimized for the . Therefore, 
-    the goal of tearing in this case is to minimize the number of equipments for 
+    the goal of tearing in this case is to minimize the number of devices for 
     which the input has to be computed from the output.
 
 **In abstract terms, this kind of tearing is equivalent to the** `minimum 
