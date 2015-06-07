@@ -101,15 +101,22 @@ assuming any naming convention for the connectors.
 -----------------------------------------
 
 The equations are given as binary expression trees in the input file.
-    
+
+.. figure:: ./pics/SympyTree.svg
+   :alt: Example of an expression tree in SymPy.
+   :align: center
+   :scale: 50%
+   
+   The expression tree of ``y = alpha*x/(1+(alpha-1)*x)`` in SymPy
+
+
 .. figure:: ./pics/ExprTree.png
-   :alt: Example of an expression tree.
+   :alt: Example of an expression tree in NetworkX.
    :align: center
    :scale: 75%
    
-   The expression tree of:
-   
-   ``y[1] = alpha*x[1]/(1.0+(alpha-1.0)*x[1])``
+   The same expression tree of ``y = alpha*x/(1+(alpha-1)*x)``) 
+   but as a NetworkX DiGraph
 
 
 The expression tree of the equations are `symbolically manipulated 
