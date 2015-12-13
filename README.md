@@ -23,7 +23,7 @@ Installation
 
 The code has been tested with Python 2.7 and 3.5. The `six`, `networkx`, 
 and `sympy` packages are necessary; `matplotlib` and `pydot` (or 
-`pydot-ng`) is recommended but not required. If you wish to run the 
+`pydot-ng`) are recommended but not required. If you wish to run the 
 exact algorithms based on integer programming, you will also need 
 [Gurobi](http://www.gurobi.com/). If you do not have Gurobi installed, 
 the demo application will detect its absence, and simply skips those 
