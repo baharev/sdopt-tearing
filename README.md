@@ -14,8 +14,8 @@ Some of the algorithms are documented in the following academic papers:
 
 Some of the code will be contributed back to 
 [NetworkX](http://networkx.github.io/documentation/latest/overview.html)
-when it is appropriate. The remaing part of the code will be released 
-as a standalone Python package on PyPI.
+when it is appropriate. The remaining part of the code will be released 
+as a Python package on PyPI.
 
 
 Installation
@@ -43,5 +43,5 @@ directory of graphviz was added to the `PATH`. Next, `pygraphviz` was
 installed from 
 [Unofficial Windows Binaries for Python Extension Packages](http://www.lfd.uci.edu/~gohlke/pythonlibs/#pygraphviz)
 as `pip install pygraphviz-1.3.1-cp27-none-win32.whl`.
-The `matplotlib` and `pydot-ng` packages were installed only *after* 
+The `matplotlib` and `pydot-ng` packages were installed only after
 `pygraphviz`.

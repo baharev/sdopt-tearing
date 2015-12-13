@@ -9,18 +9,15 @@ Exact and heuristic methods for tearing
 =======================================
 
 A demo application is presented on this web-page, showing the capabilities
-of novel tearing algorithms. The technical details will be published in an 
-academic paper. The source code of the prototype implementation will be 
-`available on GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 
-3-clause BSD license as soon as the paper has been submitted.
+of novel tearing algorithms. Some of the algorithms are documented in the 
+following academic papers:
 
-**Software requirements**. The code has been tested with Python 2.7 and 3.4. 
-The :mod:`six`, :mod:`networkx`, and :mod:`sympy` packages are necessary; 
-:mod:`matplotlib` is recommended but not required. If you wish to run the exact 
-algorithms based on integer programming, you will also need `Gurobi 
-<http://www.gurobi.com/>`_. If you do not have Gurobi installed, the demo 
-application will detect its absence, and simply skips those steps that would 
-require the integer programming solver.
+  - `An exact method for the minimum feedback arc set problem <http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf>`_
+  - Exact methods for optimal tearing (to be submitted soon).
+
+The source code of the prototype implementation is 
+`available on GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 
+3-clause BSD license.
 
 --------------------------------------------------------------------------------
 
