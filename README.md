@@ -17,8 +17,9 @@ Some of the code will be contributed back to
 when it is appropriate. The remaing part of the code will be released 
 as a standalone Python package on PyPI.
 
+
 Installation
-============
+------------
 
 The code has been tested with Python 2.7 and 3.5. The `six`, `networkx`, 
 and `sympy` packages are necessary; `matplotlib` and `pydot` (or 
@@ -28,8 +29,9 @@ exact algorithms based on integer programming, you will also need
 the demo application will detect its absence, and simply skips those 
 steps that would require the integer programming solver.
 
-Installing PyGraphviz on Windows
-================================
+
+Installing on Windows with PyGraphviz
+-------------------------------------
 
 Only Python 2.7 was tested on Dec 13, 2015. 
 Installed Python 2.7 with Miniconda-3.9.1-Windows-x86.exe from the
