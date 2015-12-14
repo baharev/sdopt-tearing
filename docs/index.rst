@@ -8,12 +8,14 @@
 Exact and heuristic methods for tearing
 =======================================
 
-A demo application is presented on this web-page, showing the capabilities
-of novel tearing algorithms. Some of the algorithms are documented in the 
-following academic papers:
+A demo application :file:`demo.py` is presented on this web-page, 
+showing the capabilities of novel tearing algorithms. Most of the 
+implemented algorithms are described in the following academic papers:
 
   - `An exact method for the minimum feedback arc set problem <http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf>`_
   - Exact methods for optimal tearing (to be submitted soon).
+
+See also `Reproducing the results of the academic papers <https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-the-academic-papers>`_.
 
 The source code of the prototype implementation is 
 `available on GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 
