@@ -19,6 +19,28 @@ wherever it is appropriate. The remaining part of the code will be released
 as a Python package on PyPI.
 
 
+Reproducing the results of the academic papers
+----------------------------------------------
+
+The test graphs are given in `benchmarks.py`. The tables of the paper
+[An exact method for the minimum feedback arc set problem](http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf) 
+can be reproduced as follows. 
+
+ - The `grb_lop.py` module implements the *Integer programming 
+ formulation with triangle inequalities* of Section 3.1. The `grb_` 
+ prefix refers to Gurobi, the `lop` part to the linear ordering problem 
+ since these constraints were developed for solving that problem. 
+ - The `grb_set_cover.py` module implements the *Integer programming 
+ formulation as minimum set cover* of Section 3.2. 
+ - The proposed method of the paper, *An integer programming approach 
+ with lazy constraint generation* of Section 4, can be found in 
+ `grb_pcm.py` where `pcm` refers to the partial cycle matrix. 
+ - The procedure called *Safely removing edges* in Appendix A is 
+ implemented in `grb_simplifier.py`.
+
+**Please keep in mind that the code is a work in progress.**
+
+
 Installation
 ------------
 
@@ -47,24 +69,3 @@ as `pip install pygraphviz-1.3.1-cp27-none-win32.whl`.
 The `matplotlib` and `pydot-ng` packages were installed only after
 `pygraphviz`. The demo application works as expected.
 
-
-Reproducing the results of the academic papers
-----------------------------------------------
-
-The test graphs are given in `benchmarks.py`. The tables of the paper
-[An exact method for the minimum feedback arc set problem](http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf) 
-can be reproduced as follows. 
-
- - The `grb_lop.py` module implements the *Integer programming 
- formulation with triangle inequalities* of Section 3.1. The `grb_` 
- prefix refers to Gurobi, the `lop` part to the linear ordering problem 
- since these constraints were developed for solving that problem. 
- - The `grb_set_cover.py` module implements the *Integer programming 
- formulation as minimum set cover* of Section 3.2. 
- - The proposed method of the paper, *An integer programming approach 
- with lazy constraint generation* of Section 4, can be found in 
- `grb_pcm.py` where `pcm` refers to the partial cycle matrix. 
- - The procedure called *Safely removing edges* in Appendix A is 
- implemented in `grb_simplifier.py`.
-
-**Please keep in mind that the code is a work in progress.**
