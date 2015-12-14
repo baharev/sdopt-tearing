@@ -300,22 +300,23 @@ improve the quality of the ordering**.
     which the input has to be computed from the output.
 
 **In abstract terms, this kind of tearing is equivalent to the** `minimum 
-feedback edge set (MFES) problem 
-<http://en.wikipedia.org/wiki/Feedback_arc_set>`_, also known as the maximum 
-acyclic subgraph problem. Compared to :ref:`the tearing methods of 
-Modelica tools <tearing-in-Modelica>`, the differences are: (1) the graph is 
-already oriented (directed), and (2) the nodes of the graph correspond to small 
-systems of equations in the MFES problem.
+feedback arc set (MFAS) problem 
+<http://en.wikipedia.org/wiki/Feedback_arc_set>`_, the complement problem
+is known as the **maximum acyclic subgraph problem**. 
+Compared to :ref:`the tearing methods of Modelica tools <tearing-in-Modelica>`, 
+the differences are: (1) the graph is already oriented (directed), and 
+(2) the nodes of the graph correspond to small systems of equations in the 
+MFAS problem.
 
 .. figure:: ./pics/MFES.png
-   :alt: The 3 red edges form a minimum feedback edge set of the directed graph.
+   :alt: The 3 red edges form a minimum feedback arc set (MFAS) of the directed graph.
    :align: center
    :scale: 50%
    
-   The 3 red edges form a minimum feedback edge set of the directed graph
+   The 3 red edges form a minimum feedback arc set of the directed graph
 
 **Both a greedy heuristic and an exact algorithm has been implemented to solve
-the feedback edge set problem for weighted directed graphs.**
+the feedback arc set problem for weighted directed graphs.**
 
 --------------------------------------------------------------------------------
 
@@ -336,8 +337,8 @@ will be used for evaluating heuristics that do not require the natural block
 structure. **I hope to receive help from the Modelica community to establish a 
 test set** where the :ref:`natural block structure <natural-block-structure>` is 
 available. Dr.-Ing. Michael Sielemann (Technical Director for Aeronautics and 
-Space at `Modelon <http://www.modelon.com/>`_) has already offered his kind 
-help.
+Space at `Modelon Deutschland GmbH <http://www.modelon.com/>`_) has already 
+offered his kind help.
 
 --------------------------------------------------------------------------------
 
@@ -358,8 +359,8 @@ Improving numerical stability
 **Tearing can yield small but very ill-conditioned systems**; as a consequence, 
 the final reduced systems can be notoriously difficult or even impossible to 
 solve. **Our recent publications** `[1] <http://dx.doi.org/10.1002/aic.14305>`_ 
-**and** `[2] <http://www.mat.univie.ac.at/%7Eneum/ms/maniSol.pdf>`_  **show how 
-this well-known numerical issue of tearing can be resolved.** The cost of the 
+**and** `[2] <http://reliablecomputing.eu/baharev_manifold_based_starting_points.pdf>`_  
+**show how this well-known numerical issue of tearing can be resolved.** The cost of the 
 improved numerical stability is the significantly increased computation time. 
 
 .. _handling-subproblems:
