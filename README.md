@@ -49,7 +49,7 @@ Reproducing the results of the paper on optimal tearing
 -------------------------------------------------------
 
 The algorithms are documented in the academic paper
-[Tearing systems of nonlinear equations -- II. A practical exact algorithm](http://reliablecomputing.eu/).
+[Tearing systems of nonlinear equations -- II. A practical exact algorithm](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf).
 
  - The `heap_md.py` module implements a heuristics for ordering to lower
  Hessenberg form.
