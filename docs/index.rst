@@ -10,15 +10,17 @@ Exact and heuristic methods for tearing
 
 A demo application :file:`demo.py` is presented on this web-page, 
 showing the capabilities of novel tearing algorithms. Most of the 
-implemented algorithms are described in the following academic papers:
+implemented algorithms are described in the following academic papers
+(submitted, only drafts are available on these links):
 
   - `An exact method for the minimum feedback arc set problem <http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf>`_
-  - Exact methods for optimal tearing (to be submitted soon).
+  - `Tearing systems of nonlinear equations I. A survey <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
+  - `Tearing systems of nonlinear equations II. A practical exact algorithm <http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf>`_
 
-See also `Reproducing the results of the academic papers <https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-the-academic-papers>`_.
+See also `Reproducing the results of the academic papers <https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-minimum-feedback-arc-set-paper>`_.
 
 The source code of the prototype implementation is 
-`available on GitHub <https://github.com/baharev/sdopt-tearing>`_ under the 
+`available on GitHub <https://github.com/baharev/sdopt-tearing#exact-and-heuristic-methods-for-tearing>`_ under the 
 3-clause BSD license.
 
 --------------------------------------------------------------------------------
@@ -374,7 +376,8 @@ Our pilot Java implementation has shown that it is crucial
   - to generate C++ source code for efficient evaluation of the subproblems
     (the residual and the Jacobian of the blocks),
     
-  - that the generated source code works with user-defined data types.
+  - that the generated source code works with user-defined data types 
+    (and C++ templates do).
 
 The next item on the agenda is to create a Python prototype implementation that 
 meets all these requirements.
@@ -415,7 +418,7 @@ the following Python code is generated (hand-edited to improve readability) ::
     u4 = 3.0 * u3  # df/dx = 3*exp(3*x+2*y)
     u5 = 2.0 * u3  # df/dy = 2*exp(3*x+2*y)
 
-**This code is already automatically generated today** with 
+**This code was automatically generated** with 
 the sibling package `SDOPT <https://sdopt.readthedocs.org>`_.
 
 The templated C++ version of this code will greatly benefit from code 

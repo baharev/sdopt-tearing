@@ -6,7 +6,8 @@ Most of the implemented algorithms are described in the following
 academic papers:
 
   - [An exact method for the minimum feedback arc set problem](http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf) (submitted)
-  - Exact methods for optimal tearing (to be submitted soon)
+  - [Tearing systems of nonlinear equations I. A survey.](http://reliablecomputing.eu/baharev_tearing_survey.pdf) (submitted)
+  - [Tearing systems of nonlinear equations II. A practical exact algorithm](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf) (submitted)
 
 Documentation of the demo application `demo.py` is available at 
 [sdopt-tearing.readthedocs.org](https://sdopt-tearing.readthedocs.org). 

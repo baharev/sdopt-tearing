@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'sdopt-tearing'
-copyright = u'2014, 2015, Ali Baharev'
+copyright = u'2014-2016, Ali Baharev'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
