@@ -109,7 +109,8 @@ assuming any naming convention for the connectors.
 3. Symbolic manipulation of the equations
 -----------------------------------------
 
-The equations are given as binary expression trees in the input file.
+The equations are given as binary expression trees in the input flattened 
+Modelica model.
 
 .. figure:: ./pics/SympyTree.svg
    :alt: Example of an expression tree in SymPy.
@@ -189,7 +190,54 @@ shown below for your convenience.
 Further details are discussed in 
 `Tearing systems of nonlinear equations I. A survey <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
 under *7.3. Hierarchical tearing*.
+
+.. _tearing-in-Modelica:
+
+5.1 Tearing as seen in Modelica tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First, the undirected bipartite graph representation of the system of equations 
+is oriented with `matching <http://en.wikipedia.org/wiki/Matching_%28graph_theory%29>`_;
+in other words, the undirected graph is made directed. Then, the strongly 
+connected components (SCC) of this directed graph are identified. This way of 
+identifying the SCCs is also referred to as **block lower triangular 
+decomposition (BLT decomposition)** or Dulmage-Mendelsohn decomposition. **After 
+finishing BLT decomposition, a subset of the edges is torn within each SCC to 
+make them acyclic.** Greedy heuristics, for example 
+`variants of Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, 
+are used to find a tear set with small cardinality. This approach can produce 
+unsatisfactory results if the system has large strongly connected components. 
+An example is shown below.
+
+.. figure:: ./pics/jmodelica.png
+   :alt: Tearing as seen in Modelica tools
+   :align: center
+   :scale: 67%
    
+   Tearing obtained from JModelica with `generate_html_diagnostics` (click to enlarge)
+    
+As it can be seen in this picture, the BLT decomposition gave one large block. 
+This is not surprising, as the example is a distillation column. The border 
+width of the largest block (the number of torn variables) is proportional to the 
+size of the column. For a realistic column, this can become problematic.
+
+However, if the :ref:`natural block structure <natural-block-structure>` is used 
+for partitioning as discussed above, the number of torn variables (the border 
+width) does not change with the size of the column. We get the following picture 
+for exactly the same input.
+
+.. figure:: ./pics/hierarchical.png
+   :alt: Hierarchical tearing with the natural block structure.
+   :align: center
+   :scale: 42%
+   
+   Hierarchical tearing with the natural block structure (click to enlarge)
+
+The first spike belongs to the condenser, then the next 5 spikes correspond to 
+the 5 stages of the distillation column, and the reboiler comes last. **The 
+number of variables on the right border (3 spikes in this example) remains 
+independent of the size of the column.**
+
 --------------------------------------------------------------------------------
 
 6. AMPL and Python code generation after tearing
@@ -231,57 +279,7 @@ The Python code only serves to cross-check correctness.
 
 --------------------------------------------------------------------------------
 
-.. _tearing-in-Modelica:
-
-7. Tearing as seen in Modelica tools
-------------------------------------
-
-First, the undirected bipartite graph representation of the system of equations 
-is oriented with `matching 
-<http://en.wikipedia.org/wiki/Matching_%28graph_theory%29>`_; in other words, 
-the undirected graph is made directed. Then, the strongly connected components 
-(SCC) of this directed graph are identified. This way of identifying the SCCs is 
-also referred to as **block lower triangular decomposition (BLT decomposition)** 
-or Dulmage-Mendelsohn decomposition. **After the BLT decomposition, a subset of 
-the edges are torn within each SCC to make them acyclic.** Greedy heuristics, 
-for example `variants of Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, 
-are used to find a tear set with small cardinality. This approach can produce 
-unsatisfactory results if the system has a large strongly connected components. 
-An example is shown below.
-
-.. figure:: ./pics/jmodelica.png
-   :alt: Tearing as seen in Modelica tools
-   :align: center
-   :scale: 67%
-   
-   Tearing obtained from JModelica with `generate_html_diagnostics` (click to enlarge)
-    
-As it can be seen in this picture, the BLT decomposition gave one large block. This is 
-not surprising, as the example is a distillation column: With the BLT 
-decomposition, the size of the largest block is proportional to the size of the 
-column. For a realistic column, this can become problematic. If the natural 
-block structure is used for partitioning, the size of the largest block does not 
-change with the size of the column. 
-
-However, if we exploit the :ref:`natural block structure <natural-block-structure>`
-as discussed above, we get the following picture for exactly the same input.
-
-.. figure:: ./pics/hierarchical.png
-   :alt: Hierarchical tearing with the natural block structure.
-   :align: center
-   :scale: 42%
-   
-   Hierarchical tearing with the natural block structure (click to enlarge)
-
-The first spike belongs to the condenser, then the next 5 spikes correspond to 
-the 5 stages of the distillation column, and the reboiler comes last. **The 
-number of variables on the right border (3 spikes in this example) remains 
-independent of the size of the column.**
-
---------------------------------------------------------------------------------
-
-
-8. A greedy tearing heuristic
+7. A greedy tearing heuristic
 -----------------------------
 
 **A greedy tearing heuristic has been implemented, inspired by** `algorithm 
@@ -311,7 +309,7 @@ improve the quality of the ordering**.
 --------------------------------------------------------------------------------
 
 
-9. Tearing in chemical engineering
+8. Tearing in chemical engineering
 ----------------------------------
 
 ..
