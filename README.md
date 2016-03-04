@@ -55,7 +55,7 @@ Reproducing the results of the paper on optimal tearing
 The algorithms are documented in the academic paper
 [Tearing systems of nonlinear equations -- II. A practical exact algorithm](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf).
 
- - The `heap_md.py` module implements a heuristics for ordering to lower
+ - The `heap_md.py` module implements a heuristic for ordering to lower
  Hessenberg form.
  - The `ilp_tear.py` module implements optimal tearing with integer 
  programming.
@@ -63,9 +63,9 @@ The algorithms are documented in the academic paper
  algorithm for optimal tearing.
  - The names of selected test problems from the 
  [COCONUT Benchmark](http://www.mat.univie.ac.at/~neum/glopt/coconut/Benchmark/Benchmark.html) 
- are under `data/benchmark/`. The results of the 12 runs (only for those 
- benchmark problems that have at most 500 non-zero entries) are plotted in the 
- following PDF files:  
+ are under `data/benchmark/`. The results of the 12 runs are plotted in the 
+ following PDF files (but only for those problems that have at most 
+ 500 non-zero entries):  
  [Ordering the Jacobian of the equality constraints](http://reliablecomputing.eu/constraint_jacobian_nz_500.pdf) (33.8 MB) and  
  [Ordering the Jacobian of the first-order optimality conditions](http://reliablecomputing.eu/first_order_opt_cond_nz_500.pdf) (49.3 MB).
 
