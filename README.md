@@ -2,15 +2,15 @@
 Exact and heuristic methods for tearing
 =======================================
 
-Most of the implemented algorithms are described in the following 
+Many of the implemented algorithms are described in the following 
 academic papers:
 
   - [An exact method for the minimum feedback arc set problem](http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf) (submitted)
   - [Tearing systems of nonlinear equations I. A survey.](http://reliablecomputing.eu/baharev_tearing_survey.pdf) (submitted)
   - [Tearing systems of nonlinear equations II. A practical exact algorithm](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf) (submitted)
 
-Documentation of the demo application `demo.py` is available at 
-[sdopt-tearing.readthedocs.org](https://sdopt-tearing.readthedocs.org). 
+See also [Reproducing the results of the academic papers](https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-minimum-feedback-arc-set-paper)
+below.
 
 
 The code is a work in progress
@@ -19,7 +19,11 @@ The code is a work in progress
 Some of the code will be contributed back to 
 [NetworkX](http://networkx.github.io/documentation/latest/overview.html)
 wherever it is appropriate. The remaining part of the code will be released 
-as a Python package on PyPI.
+as a Python package on PyPI. In the meantime, the `rpc_api.py` (rpc stands for 
+remote procedure call) is a good place to start looking. That API takes a sparse
+matrix in coordinate format and returns the row and column permutation vectors.
+Documentation of the demo application `demo.py` is available at 
+[sdopt-tearing.readthedocs.org](https://sdopt-tearing.readthedocs.org).
 
 While reading the code, please keep in mind that the code is pretty much
 a work in progress.
@@ -57,8 +61,13 @@ The algorithms are documented in the academic paper
  programming.
  - The `bb4_tear.py` module provides the custom branch and bound 
  algorithm for optimal tearing.
- - The names of selected test problems from the COCONUT Benchmark are 
- under `data/benchmark/`.
+ - The names of selected test problems from the 
+ [COCONUT Benchmark](http://www.mat.univie.ac.at/~neum/glopt/coconut/Benchmark/Benchmark.html) 
+ are under `data/benchmark/`. The results of the 12 runs (for those benchmark 
+ problems that have at most 500 non-zero entries) are plotted in the following 
+ PDF files:
+ [Ordering the Jacobian of the equality constraints](http://reliablecomputing.eu/constraint_jacobian_nz_500.pdf) (33.8 MB) and
+ [Ordering the Jacobian of the first-order optimality conditions](http://reliablecomputing.eu/first_order_opt_cond_nz_500.pdf) (49.3 MB).
 
 The tests for checking correctness are in the `test_<module name>.py` 
 modules. Cross-checking the ILP-based and the custom branch and bound 

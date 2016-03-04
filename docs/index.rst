@@ -8,10 +8,8 @@
 Exact and heuristic methods for tearing
 =======================================
 
-A demo application :file:`demo.py` is presented on this web-page, 
-showing the capabilities of novel tearing algorithms. Most of the 
-implemented algorithms are described in the following academic papers
-(submitted, only drafts are available on these links):
+Many of the implemented algorithms are described in the following academic 
+papers (submitted, only drafts are available on these links):
 
   - `An exact method for the minimum feedback arc set problem <http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf>`_
   - `Tearing systems of nonlinear equations I. A survey <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
@@ -20,8 +18,17 @@ implemented algorithms are described in the following academic papers
 See also `Reproducing the results of the academic papers <https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-minimum-feedback-arc-set-paper>`_.
 
 The source code of the prototype implementation is 
-`available on GitHub <https://github.com/baharev/sdopt-tearing#exact-and-heuristic-methods-for-tearing>`_ under the 
-3-clause BSD license.
+`available on GitHub <https://github.com/baharev/sdopt-tearing#exact-and-heuristic-methods-for-tearing>`_ 
+under the 3-clause BSD license. The code is a work in progress. Some of the code
+will be contributed back to 
+`NetworkX <http://networkx.github.io/documentation/latest/overview.html>`_
+wherever it is appropriate. The remaining part of the code will be released as a 
+Python package on PyPI.  
+In the meantime, the :file:`rpc_api.py` (rpc stands for remote procedure call) 
+is a good place to start looking. That API takes a sparse matrix in coordinate 
+format and returns the row and column permutation vectors.  As for the rest of 
+this web-page, a demo application :file:`demo.py` is presented here, showing the 
+capabilities of novel tearing algorithms.
 
 --------------------------------------------------------------------------------
 
@@ -48,6 +55,7 @@ possible). The elimination is performed along the diagonal.
    A sparse matrix ordered to the so-called spiked form
 
 --------------------------------------------------------------------------------
+
 
 Steps of the demo application
 =============================
@@ -178,6 +186,10 @@ shown below for your convenience.
    
    Hierarchical tearing with the natural block structure
 
+Further details are discussed in 
+`Tearing systems of nonlinear equations I. A survey <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
+under *7.3. Hierarchical tearing*.
+   
 --------------------------------------------------------------------------------
 
 6. AMPL and Python code generation after tearing
@@ -230,31 +242,41 @@ is oriented with `matching
 the undirected graph is made directed. Then, the strongly connected components 
 (SCC) of this directed graph are identified. This way of identifying the SCCs is 
 also referred to as **block lower triangular decomposition (BLT decomposition)** 
-or Dulmage-Mendelsohn decomposition. 
+or Dulmage-Mendelsohn decomposition. **After the BLT decomposition, a subset of 
+the edges are torn within each SCC to make them acyclic.** Greedy heuristics, 
+for example `variants of Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, 
+are used to find a tear set with small cardinality. This approach can produce 
+unsatisfactory results if the system has a large strongly connected components. 
+An example is shown below.
 
-**After the BLT decomposition, a subset of the edges are torn within each SCC to 
-make them acyclic.** Greedy heuristics, for example `variants of Cellier's 
-heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, are used to find a tear 
-set with small cardinality.
-
-.. figure:: ./pics/ClassicTearing.png
-   :alt: Spiked form, obtained with tearing as seen in Modelica tools
+.. figure:: ./pics/jmodelica.png
+   :alt: Tearing as seen in Modelica tools
    :align: center
-   :scale: 50%
+   :scale: 67%
    
-   Spiked form, obtained with tearing as seen in Modelica tools
-
-
-The spiked form in this picture was obtained with the tearing heuristic outlined 
-just above. The blue lines partition the matrix along the SCCs. As it can be 
-seen in this picture, the BLT decomposition gave one large block for our running 
-example, significantly larger than the largest one obtained with the heuristic 
-exploiting the :ref:`natural block structure <natural-block-structure>`. This is 
+   Tearing obtained from JModelica with `generate_html_diagnostics` (click to enlarge)
+    
+As it can be seen in this picture, the BLT decomposition gave one large block. This is 
 not surprising, as the example is a distillation column: With the BLT 
 decomposition, the size of the largest block is proportional to the size of the 
 column. For a realistic column, this can become problematic. If the natural 
 block structure is used for partitioning, the size of the largest block does not 
-change with the size of the column.
+change with the size of the column. 
+
+However, if we exploit the :ref:`natural block structure <natural-block-structure>`
+as discussed above, we get the following picture for exactly the same input.
+
+.. figure:: ./pics/hierarchical.png
+   :alt: Hierarchical tearing with the natural block structure.
+   :align: center
+   :scale: 42%
+   
+   Hierarchical tearing with the natural block structure (click to enlarge)
+
+The first spike belongs to the condenser, then the next 5 spikes correspond to 
+the 5 stages of the distillation column, and the reboiler comes last. **The 
+number of variables on the right border (3 spikes in this example) remains 
+independent of the size of the column.**
 
 --------------------------------------------------------------------------------
 
