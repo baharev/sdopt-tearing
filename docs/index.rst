@@ -129,7 +129,7 @@ Modelica model.
    but as a NetworkX DiGraph
 
 
-The expression tree of the equations are `symbolically manipulated 
+The expression trees of the equations are `symbolically manipulated 
 <http://docs.sympy.org/latest/tutorial/manipulation.html>`_  with `SymPy 
 <http://www.sympy.org/>`_ to **determine which variables can be explicitly and 
 safely eliminated from which equations.** An example for unsafe elimination is 
@@ -202,7 +202,7 @@ in other words, the undirected graph is made directed. Then, the strongly
 connected components (SCC) of this directed graph are identified. This way of 
 identifying the SCCs is also referred to as **block lower triangular 
 decomposition (BLT decomposition)** or Dulmage-Mendelsohn decomposition. **After 
-finishing BLT decomposition, a subset of the edges is torn within each SCC to 
+finishing the BLT decomposition, a subset of the edges is torn within each SCC to 
 make them acyclic.** Greedy heuristics, for example 
 `variants of Cellier's heuristic <http://dx.doi.org/10.1145/2666202.2666204>`_, 
 are used to find a tear set with small cardinality. This approach can produce 
