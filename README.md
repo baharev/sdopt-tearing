@@ -9,7 +9,7 @@ academic papers:
   - [Tearing systems of nonlinear equations I. A survey.](http://reliablecomputing.eu/baharev_tearing_survey.pdf) (submitted)
   - [Tearing systems of nonlinear equations II. A practical exact algorithm](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf) (submitted)
 
-See also [Reproducing the results of the academic papers](https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-minimum-feedback-arc-set-paper)
+See also [Reproducing the results of the academic papers](#reproducing-the-results-of-minimum-feedback-arc-set-paper)
 below.
 
 
@@ -65,8 +65,8 @@ The algorithms are documented in the academic paper
  [COCONUT Benchmark](http://www.mat.univie.ac.at/~neum/glopt/coconut/Benchmark/Benchmark.html) 
  are under `data/benchmark/`. The results of the 12 runs (for those benchmark 
  problems that have at most 500 non-zero entries) are plotted in the following 
- PDF files:
- [Ordering the Jacobian of the equality constraints](http://reliablecomputing.eu/constraint_jacobian_nz_500.pdf) (33.8 MB) and
+ PDF files:  
+ [Ordering the Jacobian of the equality constraints](http://reliablecomputing.eu/constraint_jacobian_nz_500.pdf) (33.8 MB) and  
  [Ordering the Jacobian of the first-order optimality conditions](http://reliablecomputing.eu/first_order_opt_cond_nz_500.pdf) (49.3 MB).
 
 The tests for checking correctness are in the `test_<module name>.py` 
