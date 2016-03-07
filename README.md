@@ -19,8 +19,9 @@ The code is a work in progress
 Some of the code will be contributed back to 
 [NetworkX](http://networkx.github.io/documentation/latest/overview.html)
 wherever it is appropriate. The remaining part of the code will be released 
-as a Python package on PyPI. In the meantime, the `rpc_api.py` (rpc stands for 
-remote procedure call) is a good place to start looking. That API takes a sparse
+as a Python package on PyPI. In the meantime, the `rpc_api.py` is a good place 
+to start looking. (`rpc` stands for remote procedure call; it can be called from
+Java or C++ through the `json_io.py`). The API in `rpc_api.py` takes a sparse
 matrix in coordinate format and returns the row and column permutation vectors.
 Documentation of the demo application `demo.py` is available at 
 [sdopt-tearing.readthedocs.org](https://sdopt-tearing.readthedocs.org).
