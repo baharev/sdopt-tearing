@@ -23,12 +23,13 @@ under the 3-clause BSD license. The code is a work in progress. Some of the code
 will be contributed back to 
 `NetworkX <http://networkx.github.io/documentation/latest/overview.html>`_
 wherever it is appropriate. The remaining part of the code will be released as a 
-Python package on PyPI.  
-In the meantime, the :file:`rpc_api.py` (rpc stands for remote procedure call) 
-is a good place to start looking. That API takes a sparse matrix in coordinate 
-format and returns the row and column permutation vectors.  As for the rest of 
-this web-page, a demo application :file:`demo.py` is presented here, showing the 
-capabilities of novel tearing algorithms.
+Python package on PyPI.  In the meantime, the :file:`rpc_api.py` is a good place 
+to start looking. (:file:`rpc` stands for remote procedure call; it can be 
+called from Java or C++ through the :file:`json_io.py`) The API in 
+:file:`rpc_api.py` takes a sparse matrix in coordinate format and returns the 
+row and column permutation vectors. As for the rest of this web-page, a demo 
+application :file:`demo.py` is presented here, showing the capabilities of the 
+novel tearing algorithms.
 
 --------------------------------------------------------------------------------
 
@@ -160,10 +161,12 @@ blue lines are absent.
 .. figure:: ./pics/OptimalTearing.png
    :alt: Optimal order, obtained with integer programming.
    :align: center
-   :scale: 50%
+   :scale: 39%
    
    Optimal order, obtained with integer programming
 
+Note that the first spike is the red entry right above the diagonal.
+   
 --------------------------------------------------------------------------------
 
 .. _natural-block-structure:
@@ -293,15 +296,19 @@ improve the quality of the ordering**.
 .. figure:: ./pics/MindegNoLookahead.png
    :alt: Spiked form obtained with the greedy tearing heuristic, no lookahead.
    :align: center
-   :scale: 50%
+   :scale: 39%
    
    Spiked form obtained with the greedy tearing heuristic, no lookahead
+
+
+There are five spikes: The gray entry on the diagonal also counts as a 
+spike.
 
 
 .. figure:: ./pics/MindegWithLookahead.png
    :alt: Spiked form obtained with the greedy tearing heuristic, with lookahead.
    :align: center
-   :scale: 50%
+   :scale: 39%
    
    Spiked form obtained with the greedy tearing heuristic, happens to be optimal
    with lookahead
