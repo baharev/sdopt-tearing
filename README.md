@@ -78,8 +78,8 @@ require [Hypothesis](https://hypothesis.readthedocs.org/en/release/), the
 (I am a big fan of property-based testing.)
 
 
-Installation
-------------
+Dependecies
+-----------
 
 The demo application has been tested with Python 2.7 and 3.5. The `six`,
 `networkx`, `sympy`, and `namedlist` packages are necessary; 
@@ -104,10 +104,10 @@ solver. The algorithms that use Gurobi have only been tested with Python
 Installing on Windows with PyGraphviz
 -------------------------------------
 
-Only Python 2.7 was tested on Dec 13, 2015. Python 2.7 was installed 
-with Miniconda-3.9.1-Windows-x86.exe from the
-[Miniconda installer archive](https://repo.continuum.io/miniconda/). 
-(The latest Miniconda failed to install.) Then 
+Only Python 2.7 was tested on Mar 08, 2016. Python 2.7 and the 
+[dependecies](#dependecies) were installed with 
+[Miniconda](http://conda.pydata.org/miniconda.html) 
+(released on Dec 17, 2015). Then 
 [graphviz](http://www.graphviz.org/Download_windows.php) was installed 
 with the `graphviz-2.38.msi` installer. After installation the bin 
 directory of graphviz was added to the `PATH`. Next, `pygraphviz` was 
