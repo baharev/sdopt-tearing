@@ -78,8 +78,8 @@ require [Hypothesis](https://hypothesis.readthedocs.org/en/release/), the
 (I am a big fan of property-based testing.)
 
 
-Dependecies
------------
+Dependencies
+------------
 
 The demo application has been tested with Python 2.7 and 3.5. The `six`,
 `networkx`, `sympy`, and `namedlist` packages are necessary; 
@@ -105,7 +105,7 @@ Installing on Windows with PyGraphviz
 -------------------------------------
 
 Only Python 2.7 was tested on Mar 08, 2016. Python 2.7 and the 
-[dependecies](#dependecies) were installed with 
+[dependencies](#dependencies) were installed with 
 [Miniconda](http://conda.pydata.org/miniconda.html) 
 (released on Dec 17, 2015). Then 
 [graphviz](http://www.graphviz.org/Download_windows.php) was installed 
