@@ -53,6 +53,18 @@ class PriorityQueue:
         self.entry_finder[task] = entry
         heappush(self.heap, entry)
     
+    def batch_update(self, iterable_task_newpriority):
+        # Assumes that each task is already in the queue!
+        entry_finder, counter, heap = self.entry_finder, self.counter, self.heap
+        for task, priority in iterable_task_newpriority:
+            entry = entry_finder.pop(task)
+            entry[-1] = None
+            entry = [priority, next(counter), task]
+            entry_finder[task] = entry
+            heappush(heap, entry)
+            #heap.append(entry)
+        #heapify(heap)
+    
     def __delitem__(self, task):
         'Mark an existing task as removed (None). Raise KeyError if not found.'
         entry = self.entry_finder.pop(task)

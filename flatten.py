@@ -8,7 +8,6 @@ from __future__ import print_function
 from gzip import GzipFile
 from xml.etree import ElementTree as ET
 import os
-from os.path import isdir
 import shutil
 import subprocess
 import sys
@@ -22,6 +21,7 @@ FLATTEN_PY = '/home/ali/ws-pydev/structure-reconstruction/fmux_creator.py'
 TMPDIR     = gettempdir()+os.sep+'FMUX'+os.sep
 
 def flatten(model_file, class_name):
+    # Everything is done after the /tmp/ directory
     create_fmux(model_file, class_name)
     model_name = model_file.rpartition('.')[0] # works for both .mo and .mop
     unpack_fmux(model_name, class_name)
@@ -39,7 +39,6 @@ def unpack_fmux(model_name, class_name):
     mangled_name = class_name.replace('.', '_')
     with ZipFile(TMPDIR+mangled_name+'.fmux') as f:
         f.extractall(path=TMPDIR)
-    # The get_ampl_name relies on these extensions (.xml and .xml.gz)
     flatmodel_xml = TMPDIR+model_name+'.xml'
     os.rename(TMPDIR+'modelDescription.xml', flatmodel_xml)
     compress(flatmodel_xml)
@@ -57,19 +56,6 @@ def clean_tmpdir(model_name):
     to_rm=[TMPDIR+e for e in os.listdir(TMPDIR) if not e.startswith(model_name)]
     for entry in to_rm:
         os.remove(entry) if os.path.isfile(entry) else shutil.rmtree(entry)
-
-def get_ampl_name(xml_filename):
-    ampl_name = TMPDIR+get_model_name(xml_filename)+'.ampl'
-    if not isdir(TMPDIR): 
-        os.mkdir(TMPDIR) # or open(ampl_name) throws otherwise 
-    return ampl_name 
-
-def get_model_name(xml_filename):
-    # A hideous way to get the model name
-    xml = os.path.basename(xml_filename)
-    assert xml.endswith('.xml') or xml.endswith('.xml.gz'), xml
-    crop = len('.xml') if xml.endswith('.xml') else len('.xml.gz')
-    return xml[:-crop]
 
 def get_etree_without_namespace(xml_file):
     xml_file = DATADIR + xml_file

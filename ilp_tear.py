@@ -13,7 +13,7 @@ from benchmarks import gen_benchmark_digraphs, digraph_to_undirected_bipartite,\
 from equations import info_on_bipartite_graph, read_bipartite_graph
 from heap_md import min_degree , matching_to_dag
 from mfes import run_mfes_heuristic
-from order_util import deterministic_topological_sort
+from order_util import deterministic_topological_sort, permute_to_hessenberg
 from test_tearing import gen_testproblems
 from utils import edges_of_cycle, rotate_min_to_first_pos, solve_ilp
 from plot_ordering import plot_hessenberg
@@ -25,8 +25,8 @@ __all__ = [ 'solve_problem' ]
 # Here (and also in grb_tear), unlike in other modules, a loop is just a simple
 # path of nodes. Elsewhere, the loops are represented as sequence of edges.
 
-def log(*args, **kwargs): # pass
-    print(*args, **kwargs)
+def log(*args, **kwargs):  pass
+log = print
 
 def main():
     setParam('LogFile', '/tmp/gurobi.log')
@@ -63,7 +63,7 @@ def real_main(use_min_degree):
     solve_problem(g, eqs, forbidden)
 
 def solve_problem(g, eqs, forbidden, use_min_degree=True): 
-    'Returns: (dag, [tear vars], [residual equations], [topsort of dag]).'
+    # Returns rowp, colp, matches, tear_set, sink_set in Hessenberg form.
     start = time()
     ret = solve_with_pcm(g, eqs, forbidden, use_min_degree)
     end = time()
@@ -88,13 +88,17 @@ def solve_with_pcm(g, eqs, forbidden, use_min_degree):
         # bound).
         candids, dag, match, ub = step(g, eqs, forbidden, loops, dag, match, ub)
     #
-    sources, sinks, order = get_solution(dag, eqs, forbidden)
-    assert ub==len(sources)
+    variables = sorted(n for n in dag if n not in eqs)
+    # all tears are sources, no other variable is source
+    sources = sorted(n for n,indeg in dag.in_degree_iter(variables) if indeg==0)
+    rowp, colp, matches, tear_set, sink_set = \
+                                 permute_to_hessenberg(g, eqs, forbidden, sources)
+    assert ub==len(tear_set), (sorted(sources), sorted(tear_set))
     log()
     log('***  Optimal solution found  ***')
-    log('Number of tear variables:    ', len(sources))
-    log('Number of residual equations:', len(sinks))
-    return dag, sources, sinks, order
+    log('Number of tear variables:    ', len(tear_set))
+    log('Number of residual equations:', len(sink_set))
+    return rowp, colp, matches, tear_set, sink_set
 
 def create_feasible_solution(g, eqs, forbidden, use_min_degree):
     if use_min_degree:
@@ -290,6 +294,7 @@ def dump(m, extension, increment=False):
 
 def orient_wrt_matching(g_orig, eqs, relax_matching, lb):
     dig = nx.DiGraph()
+    dig.add_nodes_from(g_orig)
     matched_edges = { eq_var for eq_var in relax_matching }
     for eq_var in g_orig.edges_iter(eqs):
         u, v = eq_var if eq_var in matched_edges else (eq_var[1], eq_var[0])

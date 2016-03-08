@@ -6,13 +6,14 @@ from __future__ import print_function, division
 from itertools import chain, product
 import six
 import networkx as nx
-from networkx.algorithms.bipartite import is_bipartite_node_set, projected_graph
+from networkx.algorithms.bipartite import projected_graph
 from py3compat import izip, irange
-from utils import duplicates
+
 from order_util import deterministic_topological_sort, coo_matrix_to_bipartite,\
                        get_inverse_perm, check_coordinate_format,\
                        bipartite_from_empty_matrix, check_if_indices_are_in_range
 
+from test_utils import to_bipartite_from_test_string
 
 def test_rowwise():
     print('DM decomposition of sparse matrices, stored row-wise')
@@ -471,32 +472,7 @@ def pretty_indent(tree):
     print()
 
 #-------------------------------------------------------------------------------
-# Only for testing
-
-def to_bipartite_from_test_string(mat_str):
-    rows = mat_str[0].split()
-    cols_rowwise = [line.split() for line in mat_str[1].splitlines()]
-    # check rows for typos
-    eqs = set(rows)
-    assert len(eqs) == len(rows), (sorted(eqs), sorted(rows))
-    assert len(rows) == len(cols_rowwise)
-    # check cols for typos
-    all_cols = set(chain.from_iterable(cols for cols in cols_rowwise))
-    both_row_and_col = sorted( eqs & all_cols ) 
-    assert not both_row_and_col, both_row_and_col
-    # check cols for duplicates
-    for r, cols in izip(rows, cols_rowwise):
-        dups = duplicates(cols)
-        assert not dups, 'Duplicate column IDs {} in row {}'.format(dups, r)
-    #print(rows)
-    #print(cols_rowwise)
-    g = nx.Graph()
-    g.add_nodes_from(rows)
-    g.add_nodes_from(all_cols)
-    g.add_edges_from((r,c) for r, cols in izip(rows, cols_rowwise) for c in cols)
-    assert is_bipartite_node_set(g, eqs)
-    return g, eqs
-
+# See test_utils.to_bipartite_from_test_string to create the corresponding graph
 
 TEST_CASES = {
               
@@ -544,6 +520,20 @@ def to_sparse_mat(mat_str):
     shape = ( len(set(rows)), len(set(cols)) )
     msg = check_coordinate_format(rows, cols, vals, shape)
     assert not msg, msg    
+    #---
+    ## A hack to apply random permutation
+    #from random import Random
+    #rng = Random(3) # 7
+    #mapping = list(irange(shape[0]))
+    #rng.shuffle(mapping)
+    #print(mapping)
+    #rows = [mapping[r] for r in rows]
+    #rng.shuffle(mapping)
+    #cols = [mapping[c] for c in cols]
+    #_dbg_show_input(rows, cols, vals, shape, [], []) 
+    #print(rows)
+    #print(cols)
+    #---
     return rows, cols, vals, shape
 
 COORDINATE_TEST_CASES = {
@@ -552,22 +542,22 @@ COORDINATE_TEST_CASES = {
                       1 1
                         2
                         3''',
-                        
+                         
                '''0 1 2 3
                       2 3
                         3
                         3'''),
-
+ 
     'test_2': ('''0 0 0 0
                   1 1 1 1
                       2 2
                       3 3''',
-                        
+                         
                '''0 1 2 3
                   0 1 2 3
                       2 3
                       2 3'''),
-                         
+                          
     'test_3' : ('''0  0  0  0  0  0
                    1  1  1  1  1  1
                    2  2        2  2
@@ -582,7 +572,7 @@ COORDINATE_TEST_CASES = {
                                                       11 11
                                                 12 12 12 12
                                                 13 13 13 13''',
-                                                
+                                                 
                 '''0  1  2  3  4  5
                    0  1  2  3  4  5
                    0  1        4  5
@@ -597,18 +587,58 @@ COORDINATE_TEST_CASES = {
                                                       12 13
                                                 10 11 12 13
                                                 10 11 12 13'''),
-
+ 
     'test_4' : ('''0 0 0 0
                    1 1 1 1
                    2 2 2 2''',
-                   
+                    
                 '''0 1 2 3
                    0 1 2 3
                    0 1 2 3''',
-                   
+                    
                 '''9 1 1 6 
                    3 8 1 2
-                   5 4 1 7''')
+                   5 4 1 7'''),
+                          
+     'test_5' : ('''0  0  0
+                       1  1
+                             2
+                                3  3  3
+                                4  4  4
+                                5  5  5
+                                          6  6
+                                          7  7
+                                          8  8''',
+                     
+                 '''0  1  2
+                       1  2
+                             3
+                                4  5  6
+                                4  5  6
+                                4  5  6
+                                          7  8
+                                          7  8
+                                          7  8'''),
+                         
+     'test_6' : ('''0  0  0        0
+                       1  1  1               1
+                             2
+                                3     3
+                                4  4      4
+                                5  5  5
+                                          6  6
+                                          7  7
+                                          8  8''',
+                    
+                 '''0  1  2        5
+                       1  2  3               8
+                             3
+                                4     6
+                                4  5      7  
+                                4  5  6
+                                          7  8
+                                          7  8
+                                          7  8'''),
 }
 
 

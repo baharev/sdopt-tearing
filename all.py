@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+#
 # Copyright (C) 2014, 2015 University of Vienna
 # All rights reserved.
 # BSD license.
@@ -12,9 +14,9 @@ def run(): # MUST not be called main() or we will get infinite recursion!!!
     # Just a hackish way of running everything in this directory that can be 
     # run.
     # For vanilla installations:
-    #import sys
-    #sys.path.append('/home/ali/gurobi/build/lib.linux-x86_64-2.7')
-    ignored = { 'fmux_creator.py', 'matching.py', 'json_io.py' }
+    import sys
+    sys.path.append('/home/ali/gurobi/build/lib.linux-x86_64-2.7')
+    ignored = { 'dm_to_pdf.py', 'fmux_creator.py', 'json_io.py' }
     modules = sorted( f for f in listdir('.') if f.endswith('.py') \
                                               and f not in ignored )
     check_copyright_notice(modules)

@@ -8,9 +8,12 @@ from copy import deepcopy
 import errno
 import imp
 import itertools
+import gzip
 import sys, os
+from time import strftime
 from six import exec_ 
-from py3compat import izip, izip_longest, StringIO
+from py3compat import izip, izip_longest, StringIO, cPickle_load, \
+                      cPickle_dump, cPickle_HIGHEST_PROTOCOL
 # From SDOPT
 
 class StringBuffer:
@@ -33,19 +36,32 @@ class StringBuffer:
     
 #-------------------------------------------------------------------------------
 
+def print_timestamp():
+    print(strftime("%H:%M:%S"))
+
+#-------------------------------------------------------------------------------
+
 DATADIR = 'data'+os.sep
 
 def serialize(obj, filename):
-    import pickle
-    import gzip
     with gzip.open(filename, 'wb') as f:
-        pickle.dump(obj, f)
+        cPickle_dump(obj, f, cPickle_HIGHEST_PROTOCOL)
 
 def deserialize(filename):
-    import pickle
-    import gzip
     with gzip.open(filename, 'rb') as f:
-        return pickle.load(f)
+        return cPickle_load(f)
+
+def marshal_dump(obj, filename):
+    from marshal import dump
+    with open(filename, 'wb') as f:
+        dump(obj, f)
+
+def marshal_load(filename):
+    from marshal import load
+    with open(filename, 'rb') as f:
+        return load(f)
+
+#-------------------------------------------------------------------------------
 
 @contextmanager
 def suppress_stdout():
@@ -57,12 +73,30 @@ def suppress_stdout():
         finally:
             sys.stdout = old_stdout
 
+#-------------------------------------------------------------------------------
+
 def remove_if_exists(filename):
     try:
         os.remove(filename)
     except OSError as e:
         if e.errno != errno.ENOENT:
             raise
+
+def create_dir(path):
+    try:
+        os.mkdir(path)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
+def create_dir_w_parents(path):
+    try:
+        os.makedirs(path)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
+#-------------------------------------------------------------------------------
 
 # http://code.activestate.com/recipes/82234-importing-a-dynamically-generated-module/
 def import_code(code):
@@ -73,6 +107,8 @@ def import_code(code):
         print(code)
         raise
     return module
+
+#-------------------------------------------------------------------------------
 
 def pairwise(iterable):
     '''A generator object is returned.
@@ -90,6 +126,10 @@ def duplicates(iterable):
 
 def contains_none(iterable):
     return any(e is None for e in iterable)
+
+def argsort(lst):
+    # http://stackoverflow.com/questions/3382352
+    return sorted(range(len(lst)), key=lst.__getitem__)
 
 #-------------------------------------------------------------------------------
 # Simple cycle utilities

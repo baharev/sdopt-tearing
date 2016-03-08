@@ -167,7 +167,7 @@ def reset_solved_for(equations):
 #-------------------------------------------------------------------------------
 # A helper function for the bipartite case, without any block structure
 
-def to_one_block(row_perm, col_perm, equations, dag, tears, sinks):
+def to_one_block(row_perm, col_perm, equations, match, tears, sinks):
     '''Returns the whole system as one big block, the type of the returned
     object is Block. The returned block holds references to the equations. 
     Side-effect: sets eq.solved_for on the equations which interferes with later
@@ -183,7 +183,7 @@ def to_one_block(row_perm, col_perm, equations, dag, tears, sinks):
     resids = set(sinks)
     for n in row_perm:
         if n not in resids:
-            (var,) = dag[n]
+            var = match[n]
             eq = id_eq[n]
             set_fake_elimination_if_necessary(eq, var)
             eq.solved_for = var

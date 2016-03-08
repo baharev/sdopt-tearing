@@ -92,6 +92,7 @@ def to_hessenberg_form(g, eqs, forbidden=None):
 def min_degree(g_orig, eqs, forbidden=None):
     '''Returns: tuple( [row permutation], [column permutation], 
     {eq:var and var:eq matches}, set(tear vars), set(residual equations) ).'''
+    # Duplicated in bb_tear.initial_solution with none forbidden
     assert eqs
     if forbidden is None:
         forbidden = set()
@@ -124,7 +125,7 @@ def min_degree(g_orig, eqs, forbidden=None):
         g_allowed.remove_nodes_from(vrs)
         g.remove_nodes_from(vrs)
     
-        for e in eqs_update:
+        for e in sorted(eqs_update): # keep in sync with create_heap
             tot = len(g[e])
             cost = tot-1 if g_allowed[e] else tot
             eq_tot[e]  = (cost, tot, e)
@@ -132,7 +133,7 @@ def min_degree(g_orig, eqs, forbidden=None):
     assert len(rowp) == len(eqs)
     # The row permutation determines the column permutation, let's get it!
     # get_hessenberg_order also asserts non-increasing envelope, among others
-    colp = get_hessenberg_order(g_orig, eqs, rowp, matches)
+    colp = get_hessenberg_order(g_orig, eqs, rowp)
     sink_set = { n for n in rowp if n not in matches }
     tear_set = { n for n in colp if n not in matches }
     #
@@ -157,7 +158,7 @@ def setup_graphs(g_orig, eqs, forbidden):
 
 def create_heap(g_allowed, g, eqs):
     eq_tot  = heapdict()
-    for e in eqs:
+    for e in sorted(eqs):
         tot = len(g[e])
         cost = tot-1 if g_allowed[e] else tot
         eq_tot[e]  = (cost, tot, e)

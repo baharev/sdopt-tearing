@@ -19,11 +19,13 @@ def plot(directed_graph, prog='dot'):
 def plot_tearing_result(G, elims, prog='neato', font_size=12, node_size=800):
     from matplotlib import pyplot as plt
     import networkx as nx
+    # graphviz_layout bug: http://stackoverflow.com/a/35280794/341970
+    from networkx.drawing.nx_agraph import graphviz_layout
     from sys import stderr
     
     ax = plt.figure().add_subplot(111)
     try:
-        pos = nx.graphviz_layout(G, prog)
+        pos = graphviz_layout(G, prog)
     except IndexError:
         stderr.write('Known bug with pydot, see ' 
                      'https://github.com/networkx/networkx/issues/1836\n')

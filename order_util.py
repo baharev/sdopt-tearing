@@ -3,14 +3,20 @@
 # BSD license.
 # Author: Ali Baharev <ali.baharev@gmail.com>
 from __future__ import print_function
+from itertools import chain, groupby
 from six import itervalues
 from networkx import Graph, NetworkXUnfeasible, relabel_nodes
 from networkx.algorithms.bipartite import is_bipartite_node_set
-from py3compat import irange
+from matching import maxmatch_len
+from pqueue import PriorityQueue as minheap
+from py3compat import irange, cPickle_dumps, cPickle_loads, cPickle_HIGHEST_PROTOCOL
 from utils import izip, pairwise
 
 #-------------------------------------------------------------------------------
 # The input is assumed to be correct and is not checked!
+
+# The functions in this section are subject to removal. The coordinate format
+# seems superior to the row-wise stored sparse matrices.
 
 def to_bipartite(rows, cols_rowwise):
     'Returns: (g, eqs). Assumes disjoint row and column identifier sets.'
@@ -53,10 +59,10 @@ def to_bipart_w_weights(cols_rowwise, vals_rowwise):
     assert is_bipartite_node_set(g, rows) # Same ID for both a col and a row?    
     return g, set(rows), row_pos, row_weights
 
+#-------------------------------------------------------------------------------
+
 def argsort(seq, reverse=False):
     return sorted(range(len(seq)), key=seq.__getitem__, reverse=reverse)
-
-#-------------------------------------------------------------------------------
 
 def get_row_weights(g, n_rows):
     return [sum(d['weight'] for d in itervalues(g[r])) for r in irange(n_rows)]
@@ -123,7 +129,9 @@ def get_inverse_perm(rperm, cperm):
     return rowp, colp
 
 #-------------------------------------------------------------------------------
-# Helper functions for the bipartite case, without any block structure
+# Helper functions for the bipartite case, without any block structure.
+# The functions in this section are subject to removal. They do not produce 
+# proper spiked forms (the blocks are not properly nested).
 
 def get_row_col_perm(eqs, dag, tears, sinks, order):
     '''Returns the row and the column identifiers in permuted order for the 
@@ -165,6 +173,7 @@ def colp_to_spiked_form(rowp, colp_hess, matches, tear_set, sink_set):
     return colp
 
 def check_spiked_form(g_orig, rowp, colp, tear_set):
+    # A rather weak test: does not check for proper nesting of the blocks.
     assert len(rowp) == len(colp)
     r_index = { name : i for i, name in enumerate(n for n in rowp) }
     first_elem = [ min(r_index[r] for r in g_orig[c]) for c in colp ]
@@ -175,8 +184,12 @@ def check_spiked_form(g_orig, rowp, colp, tear_set):
         else:
             assert first_nonzero == i # on the diagonal
 
-def get_hessenberg_order(g, eqs, rowp, matches):
-    colp = build_colp(g, rowp, matches)
+#-------------------------------------------------------------------------------
+# The underscore-prefixed version of get_hessenberg_order and build_colp
+# puts the tears first.
+
+def get_hessenberg_order(g, eqs, rowp):
+    colp = build_colp(g, rowp)
     # append all isolated columns at the back
     isolated_cols = sorted(n for n in g if n not in eqs and len(g[n])==0)
     colp.extend(isolated_cols)
@@ -185,7 +198,7 @@ def get_hessenberg_order(g, eqs, rowp, matches):
     check_nonincreasing_envelope(g, rowp, colp)
     return colp
 
-def build_colp(g, rowp, matches):
+def build_colp(g, rowp):
     colp, seen_cols = [ ], set()
     adj = g.adj
     for r in rowp:
@@ -202,7 +215,7 @@ def check_nonincreasing_envelope(g, rowp, colp):
     # Last occupied columns rowwise, empty rows allowed
     adj = g.adj
     last_elem  = [max(c_index[c] for c in adj[r]) if adj[r] else -1 for r in rowp]
-    c_viol = non_monotone_indices(last_elem)
+    c_viol = _non_monotone_indices(last_elem)
     #if c_viol:
     #    from plot_ordering import plot_bipartite
     #    plot_bipartite(g, set(), rowp, colp)
@@ -210,11 +223,159 @@ def check_nonincreasing_envelope(g, rowp, colp):
     # First occupied rows columnwise
     n_rows = len(rowp)
     first_elem = [min(r_index[r] for r in adj[c]) if adj[c] else n_rows for c in colp]
-    r_viol = non_monotone_indices(first_elem)
+    r_viol = _non_monotone_indices(first_elem)
     assert not r_viol, 'Non-monotone first elements in cols: {}'.format(r_viol)
+    return last_elem, first_elem  # <-- hessenberg_to_spike needs this
 
-def non_monotone_indices(lst):
+def _non_monotone_indices(lst):
     return [i for i, (u, v) in enumerate(pairwise(lst)) if u > v]
+
+
+#-------------------------------------------------------------------------------
+# Similar to heap_md.min_degree but orders primarily according to the g_torn
+
+def permute_to_hessenberg(g_orig, eqs, forbidden, tears):
+    g_allowed, g, g_torn = _setup_graphs(g_orig, eqs, forbidden, tears)
+    #from plot_ordering import plot_bipartite_no_red_greedy_order as plot_bipartite
+    #plot_bipartite(g_torn, eqs, set(edge for edge in g_torn.edges_iter(eqs) 
+    #                                      if edge in forbidden) )
+    tear_set = set(tears)
+    heap = _create_heap(g_allowed, g, g_torn, eqs)
+    rowp, matches = [ ], { }
+    while heap:
+        (torn_cost, cost, tot, eq), _ = heap.popitem()
+        #print('Eq:', eq)
+        rowp.append(eq)
+        
+        candidates = set(g_allowed[eq])-tear_set
+        if candidates:
+            var = sorted(candidates)[0] # or [-1] for last
+            assert eq  not in matches
+            assert var not in matches
+            matches[eq]  = var
+            matches[var] = eq
+            #print('Var:', var)
+        
+        vrs = sorted(g[eq])
+        
+        eqs_update = set(chain.from_iterable(g[v] for v in vrs))
+        eqs_update.discard(eq)
+        
+        g_allowed.remove_node(eq)
+        g.remove_node(eq)
+        g_torn.remove_node(eq)
+    
+        g_allowed.remove_nodes_from(vrs)
+        g.remove_nodes_from(vrs)
+        g_torn.remove_nodes_from(vrs)
+    
+        for e in sorted(eqs_update): # keep in sync with create_heap
+            nbrs = g_torn[e]
+            torn_tot = len(nbrs)
+            has_allowed_edge = any(g_allowed.has_edge(e, v) for v in nbrs)
+            torn_cost = torn_tot-1 if has_allowed_edge else torn_tot
+            tot = len(g[e])
+            cost = tot-1 if g_allowed[e] else tot
+            heap[e]  = (torn_cost, cost, tot, e)
+    
+    assert len(rowp) == len(eqs)
+    sink_set = { n for n in rowp if n not in matches }
+    tear_vars = sorted(n for n in g_orig if n not in eqs and n not in matches)
+    assert tear_vars == sorted(tears), (tear_vars, sorted(tears))
+    # The row permutation determines the column permutation, let's get it!
+    # _get_hessenberg_order also asserts non-increasing envelope, among others
+    colp = _get_hessenberg_order(g_orig, eqs, rowp, tear_set)
+    # from plot_ordering import _plot_bipartite
+    #_plot_bipartite(g_orig, forbidden, rowp, colp, 'output')
+    return rowp, colp, matches, tear_set, sink_set
+
+
+def _setup_graphs(g_orig, eqs, forbidden, tears):
+    # g is a copy of g_orig; g_allowed contains only the allowed edges of g_orig
+    g_pkl = cPickle_dumps(g_orig, cPickle_HIGHEST_PROTOCOL)
+    g = cPickle_loads(g_pkl)
+    g_allowed = cPickle_loads(g_pkl)
+    adj = g_allowed.adj
+    for u, v in forbidden:
+        del adj[u][v]
+        del adj[v][u] # assumes no self loops
+    g_torn = cPickle_loads(g_pkl)
+    g_torn.remove_nodes_from(tears)
+    return g_allowed, g, g_torn
+
+
+def _create_heap(g_allowed, g, g_torn, eqs):
+    heap  = minheap()
+    for e in sorted(eqs): # keep in sync with loop
+        nbrs = g_torn[e]
+        torn_tot = len(nbrs)
+        has_allowed_edge = any(g_allowed.has_edge(e, v) for v in nbrs)
+        torn_cost = torn_tot-1 if has_allowed_edge else torn_tot
+        tot = len(g[e])
+        cost = tot-1 if g_allowed[e] else tot
+        heap[e]  = (torn_cost, cost, tot, e)
+    return heap
+
+
+def _get_hessenberg_order(g, eqs, rowp, tear_set):
+    # Same as get_hessenberg but puts the tears first.
+    colp = _build_colp(g, rowp, tear_set)
+    # append all isolated columns at the back
+    isolated_cols = sorted(n for n in g if n not in eqs and len(g[n])==0)
+    colp.extend(isolated_cols)
+    assert len(rowp) == len(eqs)
+    assert len(colp) == len(g) - len(eqs)
+    check_nonincreasing_envelope(g, rowp, colp)
+    return colp
+
+
+def _build_colp(g, rowp, tear_set):
+    # Same as build_colp put puts the tears first
+    def col_key(c):  # put tears first
+        return 0 if c in tear_set else 1, c
+    colp, seen_cols = [ ], set()
+    adj = g.adj
+    for r in rowp:
+        cols = set(adj[r]) - seen_cols
+        if cols:
+            to_append = sorted(cols, key=col_key)
+            colp.extend(to_append)
+            seen_cols.update(to_append)
+    return colp
+
+#-------------------------------------------------------------------------------
+
+def hessenberg_to_spike(g, eqs, forbidden, rowp, colp):
+    assert len(g) == 2*len(eqs), 'Non-square matrix'
+    assert maxmatch_len(g, eqs) == len(eqs), 'Structurally singular matrix'
+    partition = _get_partition(g, rowp, colp)
+    new_colp, stack = [], []
+    for rs, cs in partition:
+        # Prefer forbidden and higher column count as spikes
+        candids = sorted(cs, key=lambda c: ((rs[0], c) in forbidden, len(g[c])))
+        m, n = len(rs), len(cs)
+        if m <= n:
+            new_colp.extend(candids[:m])
+            stack.extend(candids[m:])
+        else:
+            new_colp.extend(cs)
+            for _ in irange(m-n):
+                new_colp.append(stack.pop())
+    assert not stack, stack
+    assert sorted(new_colp) == sorted(colp), new_colp
+    #from plot_ordering import _plot_bipartite
+    #_plot_bipartite(g, forbidden, rowp, new_colp, 'spiked')
+    return new_colp
+
+
+def _get_partition(g, rowp, colp):
+    # The rectangular blocks on the diagonal of the Hessenberg form are returned 
+    r_last, c_first = check_nonincreasing_envelope(g, rowp, colp)
+    rkey = dict(izip(rowp, r_last))
+    ckey = dict(izip(colp, c_first))
+    rgroups = groupby(rowp, key=lambda r: rkey[r])
+    cgroups = groupby(colp, key=lambda c: ckey[c])
+    return [(list(rs), list(cs)) for ((_, rs), (_, cs)) in izip(rgroups, cgroups)]
 
 #-------------------------------------------------------------------------------
 # Compare with dag_util in SDOPT

@@ -2,7 +2,7 @@
 # All rights reserved.
 # BSD license.
 # Author: Ali Baharev <ali.baharev@gmail.com>
-from __future__ import print_function
+from __future__ import print_function, division
 from copy import deepcopy
 from codegen import dump_ampl, dump_pycode, to_unstructured_ampl
 from equations import create_equations, parameter_assignments, \
@@ -10,14 +10,13 @@ from equations import create_equations, parameter_assignments, \
                       get_process_graph, to_bipartite_graph, to_symbolic_form, \
                       gen_nonnesting_eqs
 from flatten import get_etree_without_namespace
-from heap_md import matching_to_dag, min_degree as heap_mindegree
+from heap_md import min_degree as heap_mindegree
 from min_degree import min_degree as lookahead_mindegree
-from order_util import get_row_col_perm, deterministic_topological_sort
+from order_util import permute_to_hessenberg, hessenberg_to_spike
 from plot_ordering import plot_ordering, plot_bipartite
+from py3compat import izip
 from sympy_tree import set_symbolic_eliminations
-from tearing import tearing as classic_tearing
-from total_ordering import total_order as hierarchical_heuristic_tearing, \
-                           to_one_block, to_spiked_form
+from total_ordering import total_order as hierarchical_tearing, to_one_block
 from variable import extract_all_vars, show_missing_bounds
 
 
@@ -45,44 +44,37 @@ class ModelWithInletsAndOutlets:
         # on integer linear programming (ILP), but without the block structure.
         # This function requires a working Gurobi installation.
         from ilp_tear import solve_problem as ilp_based_tearing
-        return self.__run_bipartite_tearing( ilp_based_tearing )
+        return self.__run_bipartite_tearing(ilp_based_tearing)
     
     def run_mindegree(self):
-        # FIXME A hack to match the old interface; the other ordering algorithms
-        #       should be fixed instead
-        def hacked_heap_md(g, eqs, forbidden):
-            rowp, colp, matches, tears, sinks = heap_mindegree(g, eqs, forbidden)
-            dag = matching_to_dag(g, eqs, forbidden, rowp, colp, matches, tears, sinks)
-            nbunch = list(colp)
-            nbunch.extend(rowp)
-            order = deterministic_topological_sort(dag, nbunch)
-            return dag, tears, sinks, order
-        return self.__run_bipartite_tearing( hacked_heap_md )
+        return self.__run_bipartite_tearing(heap_mindegree)
     
     def run_mindegree_with_lookahead(self):
-        return self.__run_bipartite_tearing( lookahead_mindegree )
-    
-    def run_classic_tearing(self):
-        equations, g, eqs, forbidden = self.__create_bipartite_repr()
-        torn_blocks = classic_tearing(g, eqs, forbidden)
-        func = lambda: to_spiked_form(equations, torn_blocks)
-        return self.__get_spiked_form_with_blocks( func ) 
+        def func(g, eqs, forbidden):
+            _dag, tears, _sinks, _order = lookahead_mindegree(g, eqs, forbidden)
+            return permute_to_hessenberg(g, eqs, forbidden, tears)
+        return self.__run_bipartite_tearing(func)
     
     def run_hierarchical_heuristic_tearing(self):
         process_graph = deepcopy(self.process_graph)
-        func = lambda: hierarchical_heuristic_tearing(process_graph)
-        return self.__get_spiked_form_with_blocks( func )
+        alltears, allresids, blocks = hierarchical_tearing(process_graph)
+        bounds = self.bounds.copy()
+        return BlockTearingResult(alltears, allresids, blocks, bounds)
     
-    def __run_bipartite_tearing(self, tearing_algorithm):
+    def __run_bipartite_tearing(self, hessenberg):
         equations, g, eqs, forbidden = self.__create_bipartite_repr()
-        dag, tears, sinks, order = tearing_algorithm(g, eqs, forbidden)
-        # Get the spiked form (row and column permutation) from the ordering:
-        row_perm, col_perm = get_row_col_perm(eqs, dag, tears, sinks, order)
+        # Get a Hessenberg form; rowp, colp: ids in permuted order
+        rowp, colp, match_hess, _tears, sinks = hessenberg(g, eqs, forbidden)
+        # Put the Hessenberg form into spiked form
+        colp = hessenberg_to_spike(g, eqs, forbidden, rowp, colp)
+        tears, match = recompute_tears_matching(g, eqs, forbidden, rowp, colp)
+        old_len = len(match_hess)//2 # eq-var and var-eq, hence //2
+        assert len(match) == old_len, (len(match), old_len)
         # A hack, turn the whole system into one big block:
-        blk = to_one_block(row_perm, col_perm, equations, dag, tears, sinks)
+        blk = to_one_block(rowp, colp, equations, match, tears, sorted(sinks))
         # blk holds references to the equations
         # Stuff for plotting and for code generation:
-        return BipartiteTearingResult( (g, eqs, forbidden), row_perm, col_perm,\
+        return BipartiteTearingResult( (g, eqs, forbidden), rowp, colp,\
                                         tears, blk, self.bounds.copy() )    
     
     def __create_bipartite_repr(self):
@@ -91,12 +83,6 @@ class ModelWithInletsAndOutlets:
         equations = list(gen_nonnesting_eqs(equations))
         g, eqs, forbidden =  to_bipartite_graph(equations)
         return equations, g, eqs, forbidden
-
-    def __get_spiked_form_with_blocks(self, func):
-        alltears, allresids, blocks = func()
-        bounds = self.bounds.copy()
-        return BlockTearingResult(alltears, allresids, blocks, bounds)
-
 
 #-------------------------------------------------------------------------------
 
@@ -199,3 +185,21 @@ def finish_connections(m):
     m.process_graph = get_process_graph( m.equations, m.raw_connections, \
                                          m.mapping, m.parameters)
     m.raw_connections = None
+
+#-------------------------------------------------------------------------------
+
+def recompute_tears_matching(g, eqs, forbidden, rowp, colp):
+    # rowp and colp must belong to a valid spiked form
+    assert len(rowp) == len(colp)
+    tears, match = [], {}
+    r_index = { name : i for i, name in enumerate(n for n in rowp) }
+    first_elem = [ min(r_index[r] for r in g[c]) for c in colp ]
+    for i, (r, c) in enumerate(izip(rowp, colp)):
+        first_nonzero = first_elem[i]
+        assert first_nonzero <= i, (first_nonzero, i) # on or above the diagonal
+        above_diagonal = first_nonzero < i
+        if above_diagonal or (r, c) in forbidden:
+            tears.append(c) 
+        else: # on the diagonal and allowed
+            match[r] = c
+    return tears, match

@@ -40,13 +40,6 @@ def main():
     result = model.run_hierarchical_heuristic_tearing()
     show(result)
     
-    # Classic tearing, as in Modelica tools. Perform bipartite matching, then 
-    # find the strongly connected components (SCCs); in short, do a block lower 
-    # triangular (BLT) decomposition. Then, apply a variant of Cellier's greedy
-    # tearing heuristic to break all algebraic loops in each SCC. 
-    result = model.run_classic_tearing()
-    show(result)
-    
     # A greedy tearing heuristic has been implemented, inspired by algorithm 
     # (2.3) of Fletcher and Hall, see http://dx.doi.org/10.1007/BF02025533
     # The heuristic resembles the minimum degree algorithm, hence the name. 

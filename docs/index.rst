@@ -301,8 +301,8 @@ improve the quality of the ordering**.
    Spiked form obtained with the greedy tearing heuristic, no lookahead
 
 
-There are five spikes: The gray entry on the diagonal also counts as a 
-spike.
+There are five spikes without lookahead: The gray entry on the diagonal also 
+counts as a spike.
 
 
 .. figure:: ./pics/MindegWithLookahead.png

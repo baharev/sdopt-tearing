@@ -259,6 +259,47 @@ def run_tests():
                 print('Residuals:', residuals)
             if tears or residuals:
                 print()
+    modelica_tearing()
+
+#-------------------------------------------------------------------------------
+# Stuff finally removed from demo.py. Subject to deletion.
+
+# Classic tearing, as in Modelica tools. Perform bipartite matching, then 
+# find the strongly connected components (SCCs); in short, do a block lower 
+# triangular (BLT) decomposition. Then, apply a variant of Cellier's greedy
+# tearing heuristic to break all algebraic loops in each SCC. 
+#result = model.run_classic_tearing()
+#show(result)
+
+def modelica_tearing():
+    from model_fmux import BlockTearingResult #, ModelWithInletsAndOutlets
+    from total_ordering import to_spiked_form
+    #model = ModelWithInletsAndOutlets('demo.xml.gz')
+    from utils import DATADIR, deserialize #, serialize
+    #serialize(model, 'demo.pkl.gz')
+    from os.path import isfile
+    fname = DATADIR + 'demo.pkl.gz'
+    if not isfile(fname):
+        return
+    model = deserialize(fname)
+    equations, g, eqs, forbidden = _create_bipartite_repr(model)
+    torn_blocks = tearing(g, eqs, forbidden)
+    alltears, allresids, blocks = to_spiked_form(equations, torn_blocks)
+    bounds = model.bounds.copy()
+    res = BlockTearingResult(alltears, allresids, blocks, bounds)
+    res.plot()
+    res.generate_ampl_code()
+    res.generate_python_code()
+
+def _create_bipartite_repr(m):
+    from equations import gen_nonnesting_eqs, to_bipartite_graph
+    # The ordering algorithms may write the equations, so do a deepcopy
+    equations = deepcopy(m.equations)
+    equations = list(gen_nonnesting_eqs(equations))
+    g, eqs, forbidden =  to_bipartite_graph(equations)
+    return equations, g, eqs, forbidden
+
+#-------------------------------------------------------------------------------
 
 if __name__=='__main__':
     run_tests()

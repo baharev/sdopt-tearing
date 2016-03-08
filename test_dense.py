@@ -3,21 +3,26 @@
 # BSD license.
 # Author: Ali Baharev <ali.baharev@gmail.com>
 from __future__ import print_function
+from sys import stderr
 from networkx import Graph
 from plot_ordering import plot_bipartite
 from test_tearing import grouper
-from order_util import get_row_col_perm
+from order_util import hessenberg_to_spike
+from utils import has_gurobi
 
 __all__ = [ 'create_test_problem']
 
 def main():
+    if not has_gurobi():
+        stderr.write('Gurobi is required to run this module.\n')
+        return
     # lazy import, otherwise gurobipy creates gurobi.log
     from ilp_tear import solve_problem as ilp_tearing
     for g, eqs, forbidden in gen_testproblems():
-        dag, tears, sinks, order = ilp_tearing(g, eqs, forbidden)
+        rowp, colp, _match, _tears, _sinks = ilp_tearing(g, eqs, forbidden)
         # Get the spiked form (row and column permutation) from the ordering:
-        row_perm, col_perm = get_row_col_perm(eqs, dag, tears, sinks, order)
-        plot_bipartite(g, forbidden, row_perm, col_perm)
+        colp = hessenberg_to_spike(g, eqs, forbidden, rowp, colp) 
+        plot_bipartite(g, forbidden, rowp, colp)
 
 def gen_testproblems():
     # yields: (undirected bipartite graph, equations, forbidden edges)
