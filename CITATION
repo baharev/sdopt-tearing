@@ -1,0 +1,74 @@
+..
+   This file is part of sdopt-tearing https://github.com/baharev/sdopt-tearing, 
+   and is Copyright (C) 2015-2016 the University of Vienna.
+   It is licensed under the three-clause BSD license; see LICENSE.
+   Contact: ali.baharev@gmail.com
+   
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are
+   met:
+   
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+   
+    * Neither the name of the University of Vienna nor the names
+      of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written
+      permission.
+   
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+   HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*********
+Citations
+*********
+
+Software Citation
+=================
+
+If you use the sdopt-tearing software, please cite the relevant paper(s):
+
+  - `Tearing systems of nonlinear equations I. A survey <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
+  - `Tearing systems of nonlinear equations II. A practical exact algorithm <http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf>`_
+  - `An exact method for the minimum feedback arc set problem <http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf>`_
+
+.. code-block:: tex
+
+    @ARTICLE{tearing-survey,
+      AUTHOR = {A. Baharev and H. Schichl and A. Neumaier},
+      TITLE = {Tearing systems of nonlinear equations -- {I.} {A} survey},
+      YEAR = {2016},
+      URL = {http://reliablecomputing.eu/baharev\_tearing\_survey.pdf},
+      NOTE = {Submitted}
+    }
+
+    @ARTICLE{tearing-exact,
+      AUTHOR = {A. Baharev and H. Schichl and A. Neumaier},
+      TITLE = {Tearing systems of nonlinear equations -- {II.} {A} practical exact algorithm},
+      YEAR = {2016},
+      URL = {http://reliablecomputing.eu/baharev\_tearing\_exact\_algorithm.pdf},
+      NOTE = {Submitted}
+    }
+
+    @ARTICLE{mfes,
+      AUTHOR = {A. Baharev and H. Schichl and A. Neumaier},
+      TITLE = {An exact method for the minimum feedback arc set problem},
+      YEAR = {2016},
+      URL = {http://reliablecomputing.eu/baharev\_minimum\_feedback\_arc\_set.pdf},
+      NOTE = {Submitted}
+    }
+
