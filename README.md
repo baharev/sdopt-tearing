@@ -30,12 +30,14 @@ While reading the code, please keep in mind that the code is pretty much
 a work in progress.
 
 
-Reproducing the results of minimum feedback arc set paper
----------------------------------------------------------
+Reproducing the results of the minimum feedback arc set paper
+-------------------------------------------------------------
 
-The test graphs are given in `benchmarks.py`. The tables of the paper
+The results of the paper
 [An exact method for the minimum feedback arc set problem](http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf) 
 can be reproduced as follows. 
+
+**Algorithms:**
 
  - The `grb_lop.py` module implements the *Integer programming 
  formulation with triangle inequalities* of Section 3.1. The `grb_` 
@@ -43,13 +45,50 @@ can be reproduced as follows.
  since these constraints were developed for solving that problem. 
  - The `grb_set_cover.py` module implements the *Integer programming 
  formulation as minimum set cover* of Section 3.2. 
- - The proposed method of the paper, *An integer programming approach 
- with lazy constraint generation* of Section 4, can be found in 
- `grb_pcm.py` where `pcm` refers to the partial cycle matrix. 
+ - The `grb_lazy.py` provides the implementation of the proposed method, 
+ *An integer programming approach with lazy constraint generation* of Section 4.
  - The procedure called *Safely removing edges* in Appendix A is 
  implemented in `grb_simplifier.py`.
 
+**Input graphs:**
+ 
+The test graphs are given in plain text files. The `*.edges` file 
+gives the edge list of the graph; the `*.mfes` file gives the minimum feedback
+edge set; the `*.cycles` file gives the cycles that are sufficient to include in
+the cycle matrix in order to prove the optimality of the minimum feedback edge 
+set; the `*.lp` encodes the corresponding integer linear program (a minimum 
+set cover problem) in CPLEX LP file format, and the `*.mst` the optimal 
+solution vector of this integer program. 
 
+The cycles in the `*.cycles` file are given one per line, and each line gives 
+the edge list of one cycle; for example the line `1 6 6 8 8 1` encodes the 
+cycle of the edges `(1, 6)`, `(6, 8)`, `(8, 1)`.
+
+Since only the median execution time is necessary to draw the median execution 
+time vs. `n` plots, it was possible to give up on certain long running 
+computations. These graphs are given in the `*_aborted.zip` files. They do not 
+contain any `*.mfes`, `*.cycles`, `*.lp`, or `*.mst` since these problems were 
+not solved to optimality. The only claim is that computing the minimum feedback 
+edge set of these graphs with the proposed method takes longer than the median 
+execution time for the corresponding group.
+
+The graphs used for benchmarking are given in the following files.
+ 
+ - Section 5.1. The easy test graphs for cross-checking correctness are given in
+ the Python module `benchmarks.py`. 
+ - Section 5.2. The sparse random graphs are given in 
+ `benchmark_mfes/erdos_renyi.zip` and 
+ `benchmark_mfes/erdos_renyi_aborted.zip`. The seeds `61` and `78` were skipped 
+ since they yielded random graphs with more than one strongly connected 
+ components for some of the `n`s.
+ - Section 5.3. The random tournaments for testing the worst-case behavior are 
+ given in `benchmark_mfes/tournament.zip` and 
+ `benchmark_mfes/tournament_aborted.zip`.
+ - Section 5.4. The challenging sparse graphs are given in 
+ `benchmark_mfes/de_Bruijn.zip` and in `benchmark_mfes/Imase_Itoh.zip`. The 
+ self-loops, if any, have been removed.
+ 
+ 
 Reproducing the results of the paper on optimal tearing
 -------------------------------------------------------
 
@@ -64,7 +103,7 @@ The algorithms are documented in the academic paper
  algorithm for optimal tearing.
  - The names of selected test problems from the 
  [COCONUT Benchmark](http://www.mat.univie.ac.at/~neum/glopt/coconut/Benchmark/Benchmark.html) 
- are under `data/benchmark/`. The results of the 12 runs are plotted in the 
+ are under `data/benchmark_tearing/`. The results of the 12 runs are plotted in the 
  following PDF files (but only for those problems that have at most 
  500 non-zero entries):  
  [Ordering the Jacobian of the equality constraints](http://reliablecomputing.eu/constraint_jacobian_nz_500.pdf) (33.8 MB) and  
@@ -73,7 +112,7 @@ The algorithms are documented in the academic paper
 The tests for checking correctness are in the `test_<module name>.py` 
 modules. Cross-checking the ILP-based and the custom branch and bound 
 algorithm is implemented in `test_bb_ilp.py`. Running these tests 
-require [Hypothesis](https://hypothesis.readthedocs.org/en/release/), the 
+require [Hypothesis](https://hypothesis.readthedocs.io), the 
 [QuickCheck](https://en.wikipedia.org/wiki/QuickCheck) for Python.
 (I am a big fan of property-based testing.)
 
