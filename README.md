@@ -9,7 +9,7 @@ academic papers:
   - [Tearing systems of nonlinear equations I. A survey.](http://reliablecomputing.eu/baharev_tearing_survey.pdf) (submitted)
   - [Tearing systems of nonlinear equations II. A practical exact algorithm](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf) (submitted)
 
-See also [Reproducing the results of the academic papers](#reproducing-the-results-of-minimum-feedback-arc-set-paper)
+See also [Reproducing the results of the academic papers](#reproducing-the-results-of-the-minimum-feedback-arc-set-paper)
 below.
 
 
@@ -24,7 +24,7 @@ to start looking. (`rpc` stands for remote procedure call; it can be called from
 Java or C++ through the `json_io.py`). The API in `rpc_api.py` takes a sparse
 matrix in coordinate format and returns the row and column permutation vectors.
 Documentation of the demo application `demo.py` is available at 
-[sdopt-tearing.readthedocs.org](https://sdopt-tearing.readthedocs.org).
+[sdopt-tearing.readthedocs.org](https://sdopt-tearing.readthedocs.io).
 
 While reading the code, please keep in mind that the code is pretty much
 a work in progress.
@@ -37,7 +37,7 @@ The results of the paper
 [An exact method for the minimum feedback arc set problem](http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf) 
 can be reproduced as follows. 
 
-**Algorithms:**
+**Algorithms**
 
  - The `grb_lop.py` module implements the *Integer programming 
  formulation with triangle inequalities* of Section 3.1. The `grb_` 
@@ -50,27 +50,29 @@ can be reproduced as follows.
  - The procedure called *Safely removing edges* in Appendix A is 
  implemented in `grb_simplifier.py`.
 
-**Input graphs:**
+**Input graphs**
  
 The test graphs are given in plain text files. The `*.edges` file 
 gives the edge list of the graph; the `*.mfes` file gives the minimum feedback
-edge set; the `*.cycles` file gives the cycles that are sufficient to include in
-the cycle matrix in order to prove the optimality of the minimum feedback edge 
-set; the `*.lp` encodes the corresponding integer linear program (a minimum 
-set cover problem) in CPLEX LP file format, and the `*.mst` the optimal 
-solution vector of this integer program. 
+edge set. The `*.cycles` file gives those cycles that are sufficient to include 
+in the cycle matrix in order to prove the optimality of the minimum feedback 
+edge set, and the `*.lp` encodes the corresponding integer linear program (a 
+minimum set cover problem) in CPLEX LP file format. The `*.mst` file gives the 
+optimal solution vector of this integer program, and can be used as a starting 
+point as well. 
 
 The cycles in the `*.cycles` file are given one per line, and each line gives 
-the edge list of one cycle; for example the line `1 6 6 8 8 1` encodes the 
+the edge list of one cycle. For example the line  
+`1 6 6 8 8 1` encodes the 
 cycle of the edges `(1, 6)`, `(6, 8)`, `(8, 1)`.
 
-Since only the median execution time is necessary to draw the median execution 
+Since only the median execution time is necessary to create the median execution 
 time vs. `n` plots, it was possible to give up on certain long running 
 computations. These graphs are given in the `*_aborted.zip` files. They do not 
 contain any `*.mfes`, `*.cycles`, `*.lp`, or `*.mst` since these problems were 
 not solved to optimality. The only claim is that computing the minimum feedback 
 edge set of these graphs with the proposed method takes longer than the median 
-execution time for the corresponding group.
+execution time for the corresponding group of graphs.
 
 The graphs used for benchmarking are given in the following files.
  
