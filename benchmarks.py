@@ -183,14 +183,14 @@ TESTPROBLEMS = {
 57  55
 ''',
 
-# 'Problem 1 (opt=21)' : '''
-# 1   1   2   3   4   5   6
-# 2   1   2   3   4   5   6
-# 3   1   2   3   4   5   6
-# 4   1   2   3   4   5   6
-# 5   1   2   3   4   5   6
-# 6   1   2   3   4   5   6
-# ''',
+'Problem 1 (opt=15)' : '''
+1       2   3   4   5   6
+2   1       3   4   5   6
+3   1   2       4   5   6
+4   1   2   3       5   6
+5   1   2   3   4       6
+6   1   2   3   4   5    
+''',
 
 # FIXME - Self-loops are not handled correctly (grb_* for example)
 #       - (opt=number) is not checked

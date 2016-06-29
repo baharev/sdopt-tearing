@@ -7,16 +7,17 @@ from itertools import combinations, product
 from time import time
 from benchmarks import gen_benchmark_digraphs
 from grb_simplifier import iteratively_remove_runs_and_bypasses
-from grb_pcm import get_orig_edges_map
+from grb_pcm import get_orig_edges_map, feasible_solution
 from mfes import noncopy_split_to_nontrivial_sccs
 from py3compat import irange
 from utils import double_check, solve_ilp, info_short
+from networkx.algorithms.dag import topological_sort
 
 ################################################################################
 #
 # The code is admittedly ugly: This is a port of the CPLEX OPL script to Python. 
-# The linear ordering problem (LOP) formulation is ineffective; the goal of this
-# script is to demonstrate this. 
+# The linear ordering problem (LOP) formulation is ineffective for sparse 
+# graphs. The goal of this script is to demonstrate this. 
 #
 ################################################################################
 
@@ -30,11 +31,16 @@ def main():
         solve_problem(g_input)
 
 
-def solve_problem(g_orig):
+# FIXME solve_triangle_inequalities assumes that we have a single SCC when it 
+#       sets the feasible solution. Problems can arise if a feasible solution is
+#       passed in but the graph has more than one SCC.
+
+def solve_problem(g_orig, stats=None, feasible_sol=None):
     'Returns: [torn edges], cost.'
     elims, cost = [ ], 0
     for sc in noncopy_split_to_nontrivial_sccs(g_orig.copy()): # <- Copy passed!
-        partial_elims, partial_cost = solve_triangle_inequalities(sc)
+        partial_elims, partial_cost = \
+                            solve_triangle_inequalities(sc, stats, feasible_sol)
         elims.extend(partial_elims)
         cost += partial_cost
     double_check(g_orig, cost, elims, is_labeled=True)
@@ -43,7 +49,7 @@ def solve_problem(g_orig):
     return elims, cost 
 
 
-def solve_triangle_inequalities(g):
+def solve_triangle_inequalities(g, stats, feasible_sol):
     iteratively_remove_runs_and_bypasses(g)
     # The above simplification removes edges, but the d['orig_edges'] still 
     # refers to these edges. As a result, the double_check calls in this module
@@ -55,9 +61,9 @@ def solve_triangle_inequalities(g):
     # the graph and then undo it on the elimination order. 
     origedges_map = get_orig_edges_map(g)
     #
-    model, y = build_lp(g)
+    model, y = build_lp(g, feasible_sol)
     start = time()
-    success = solve_ilp(model)
+    success = solve_ilp(model, stats)
     end = time()
     print('Overall solution time: {0:0.1f} s'.format(end-start))
     assert success, 'Solver failures are not handled at the moment...'
@@ -72,7 +78,7 @@ def solve_triangle_inequalities(g):
     return final_elims, cost
 
 
-def build_lp(g):
+def build_lp(g, feasible_sol):
     from gurobipy import LinExpr, GRB, Model #, setParam
     # We introduce an integer index per node ID. Sometimes we will use this 
     # index, and sometimes the node ID; this makes the code a bit messy. 
@@ -104,9 +110,20 @@ def build_lp(g):
     obj = [(c[i][j], y[(i,j)]) for i, j in combinations(irange(n_nodes), 2)]
     model.setObjective(LinExpr(obj), GRB.MINIMIZE)
     model.setAttr('ObjCon', shift)
+    set_start_point(g, model, y, i_nodeid, feasible_sol)
     model.update()
     return model, y
 
+def set_start_point(g_orig, model, y, i_nodeid, feasible_sol):
+    # FIXME It assumes that we only have a single SCC
+    elims, _cost = feasible_solution(g_orig) if feasible_sol is None else feasible_sol
+    g = g_orig.copy()
+    g.remove_edges_from(elims)
+    order = {n: i for i, n in enumerate(topological_sort(g))}
+    for i, j in combinations(irange(len(i_nodeid)), 2):
+        pos_a = order[i_nodeid[i]]
+        pos_b = order[i_nodeid[j]]
+        y[(i,j)].start = 0 if pos_a < pos_b else 1
 
 def recover_order(model, y, n_nodes):
     # Port of the OPL script: Admittedly ugly and inefficient

@@ -12,6 +12,7 @@ import gzip
 import sys, os
 from time import strftime
 from six import exec_ 
+from namedlist import namedlist
 from py3compat import izip, izip_longest, StringIO, cPickle_load, \
                       cPickle_dump, cPickle_HIGHEST_PROTOCOL
 # From SDOPT
@@ -218,6 +219,9 @@ def split_to_nontrivial_sccs(g):
 #-------------------------------------------------------------------------------
 # Gurobi utilities
 
+class TimeLimit(BaseException):
+    pass
+
 def has_gurobi():
     try:
         import gurobipy as grb
@@ -226,11 +230,24 @@ def has_gurobi():
         return False
     return True
 
-def solve_ilp(m):
-    'Returns True on success, False otherwise.'
+
+# Counters: ILPs solved, nodes explored, simplex iterations performed.
+# These will be mutated in-place if passed as the keyword argument stats.
+Stats = namedlist('Stats', 'name  params  is_optimal cost  ILP  node  iter  time')
+
+def solve_ilp(m, stats=None):
+    'Raises TimeLimit if reached. Returns True on success, False otherwise.'
     from gurobipy import GRB
     m.optimize()
+    if stats:
+        stats.ILP += 1
+        stats.node += int(m.nodeCount)
+        stats.iter += int(m.iterCount)
     status = m.status
+    if status == GRB.status.TIME_LIMIT:
+        obj = int(round(m.getObjective().getValue()))
+        print('Objective when time limit reached:', obj)
+        raise TimeLimit()
     if status == GRB.status.INF_OR_UNBD or status == GRB.status.INFEASIBLE \
       or status == GRB.status.UNBOUNDED:
         print('Infeasible or unbounded model')

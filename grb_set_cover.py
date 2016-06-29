@@ -16,11 +16,14 @@ def main():
             continue # too many simple cycles
         solve_cm(g, edgelist_per_cycle)
 
-def solve_cm(g, edgelist_per_cycle):
+# Stats only contains counters that will be mutated in-place if passed as the 
+# keyword argument stats.
+
+def solve_cm(g, edgelist_per_cycle, stats=None):
     #setParam("LogFile", "/tmp/gurobi.log")
     #setParam("OutputFlag", 0)
     m, vrs = build_ilp(g, edgelist_per_cycle)
-    success = solve_ilp(m)
+    success = solve_ilp(m, stats)
     if not success:
         return None, None
     solution =  [ e for e, y in six.iteritems(vrs) if int(round(y.x)) == 1 ]

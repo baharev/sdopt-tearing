@@ -17,11 +17,14 @@ from utils import double_check, to_cycle
 def log(*args, **kwargs):  pass
 #    print('+ ', *args, **kwargs) if args or kwargs else print()
 
-def solve_problem(g_orig):
+# Stats only contains counters that will be mutated in-place if passed as the 
+# keyword argument stats.
+
+def solve_problem(g_orig, stats=None):
     'Returns: [torn edges], cost.'
     elims, cost = [ ], 0
     for sc in noncopy_split_to_nontrivial_sccs(g_orig.copy()): # <- Copy passed!
-        partial_elims, partial_cost = solve_with_pcm(sc)
+        partial_elims, partial_cost = solve_with_pcm(sc, stats)
         elims.extend(partial_elims)
         cost += partial_cost
     double_check(g_orig, cost, elims, is_labeled=True, log=log)
@@ -29,7 +32,7 @@ def solve_problem(g_orig):
     info(g_orig, log=log)
     return elims, cost 
 
-def solve_with_pcm(g):
+def solve_with_pcm(g, stats=None):
     iteratively_remove_runs_and_bypasses(g)
     # The above simplification removes edges, but the d['orig_edges'] still 
     # refers to these edges. As a result, the double_check calls in this module
@@ -50,7 +53,7 @@ def solve_with_pcm(g):
     loops = initial_loop_set(g)
     # The inefficient greedy heuristic, see the comments at its implementation
     #loops = append_loops_greedily(g, set(), loops, ub)
-    missed, ruins, elims, ub = step(g, loops, elims, ub)
+    missed, ruins, elims, ub = step(g, loops, elims, ub, stats)
     while missed:
         # Put a shortest path loop around each missed edge, and try to improve
         # the lower bound and/or the feasible solution (upper bound). 
@@ -59,7 +62,7 @@ def solve_with_pcm(g):
         #loops = append_loops_greedily(g, loops, candidates, ub)
         loops = loops | candidates  # <- The naive way: no subset selection
         #
-        missed, ruins, elims, ub = step(g, loops, elims, ub)
+        missed, ruins, elims, ub = step(g, loops, elims, ub, stats)
     #run_IIS(g, loops, ub)
     # Done. Now undo the  d['orig_edges'] mess.
     final_elims = [ ]
@@ -95,10 +98,10 @@ def initial_loop_set(g):
     log(len(small_loops), 'small loops')
     return small_loops
 
-def step(g, loops, feas_elims, ub):
+def step(g, loops, feas_elims, ub, stats):
     # Solve relaxation with the cycle matrix of loops. This solution 
     # MUST BE rigorous.
-    relax_elims, lb = solve_relaxation(g, loops)
+    relax_elims, lb = solve_relaxation(g, loops, stats)
     assert lb <= ub
     if lb == ub:
         log('***  Optimal solution found  ***')
@@ -119,7 +122,7 @@ def step(g, loops, feas_elims, ub):
     # Get the missed edges and the ruins of the relaxation: We need new 
     # candidate loops. The missed_edges does not have to be rigorous. We may 
     # also improve the currently best feasible solution. 
-    missed = missed_edges(g_ruins, relax_elims)
+    missed = missed_edges(g_ruins)
     assert missed
     new_feas_elims = relax_elims + missed
     new_ub = sum(g[u][v]['weight'] for u,v in new_feas_elims)
@@ -130,15 +133,15 @@ def step(g, loops, feas_elims, ub):
         double_check(g, ub, feas_elims, is_labeled=True, log=log)
     return missed, g_ruins, feas_elims, ub
 
-def solve_relaxation(g, loops):
-    relax_elims, lb = solve_cm(g, loops)
+def solve_relaxation(g, loops, stats):
+    relax_elims, lb = solve_cm(g, loops, stats)
     assert relax_elims is not None, 'Solver failures are not handled'
     log()
     log('LB >=', lb)
     log('Cycle matrix size:', len(loops))
     return relax_elims, lb
 
-def missed_edges(ruins, elims):
+def missed_edges(ruins):
     # We have a choice here: If there are not too many simple cycles, we can 
     # solve the remaining graph rigorously. Otherwise, we can only call the 
     # heuristic.
@@ -289,6 +292,26 @@ def run_IIS(g, loops, ub):
     #m.write('JacobsenMinimal.lp')
     _, obj = solve_cm(g, cyc_subset)
     print('Obj:', obj)    
+
+#-------------------------------------------------------------------------------
+
+def feas_relax(g, loops, ub):
+    from gurobipy import Column, GRB, LinExpr
+    from grb_set_cover import build_ilp
+    #
+    loops = sorted(loops) # loops needs to be a list, and sorting for stability
+    m, vrs = build_ilp(g, loops)
+    a, y = [ ], [ ]
+    for u,v,d in g.edges_iter(data=True):
+        a.append(d['weight']), y.append(vrs[u,v])
+    lhs = LinExpr(a, y)
+    m.addConstr(lhs, GRB.EQUAL, ub)
+    m.update()
+    m.setObjective(0.0)
+    # add slack variables, except the last artificial constraint
+    for c in m.getConstrs()[:-1]:
+        m.addVar(obj=-1.0, lb=0.0, ub=1.0, column=Column([-1], [c]))
+    m.optimize()
 
 #-------------------------------------------------------------------------------
 

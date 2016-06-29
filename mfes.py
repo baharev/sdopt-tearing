@@ -98,10 +98,8 @@ def select_one_edgelist(sc, inc, outc):
     if not inc:
         return sc.out_edges(nodes_minout[0], data=True) # Sub-optimal, see above
     
-    assert min_indeg == min_outdeg
-    
     # There might be neighbor nodes, connected with a single edge
-    if min_indeg==1: # and min_outdeg == 1 as asserted above
+    if min_indeg==1 and min_outdeg == 1:
         nbrs = { }
         for v in nodes_minin:
             (u,) = sc.pred[v]
