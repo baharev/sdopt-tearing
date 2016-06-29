@@ -26,8 +26,8 @@ matrix in coordinate format and returns the row and column permutation vectors.
 Documentation of the demo application `demo.py` is available at 
 [sdopt-tearing.readthedocs.io](https://sdopt-tearing.readthedocs.io).
 
-While reading the code, please keep in mind that the code is pretty much
-a work in progress.
+While reading the code, **please keep in mind that the code is a work in 
+progress.**
 
 
 Reproducing the results of the minimum feedback arc set paper

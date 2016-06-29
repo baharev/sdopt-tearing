@@ -67,7 +67,11 @@ def get_solution(sympy_tree, v, to_ampl, varname_bnds, linear_vars):
     return varname+' = '+solution if safe else None
 
 eval_code = Template('''
-from sympy.mpmath import iv
+try:
+    from sympy.mpmath import iv
+except ImportError:
+    from mpmath import iv
+
 iv.dps = 15
 
 def is_safe():
