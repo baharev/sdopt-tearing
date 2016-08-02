@@ -22,7 +22,8 @@ wherever it is appropriate. The remaining part of the code will be released
 as a Python package on PyPI. In the meantime, the `rpc_api.py` is a good place 
 to start looking. (`rpc` stands for remote procedure call; it can be called from
 Java or C++ through the `json_io.py`). The API in `rpc_api.py` takes a sparse
-matrix in coordinate format and returns the row and column permutation vectors.
+matrix in coordinate format and returns the row and column permutation vectors. 
+
 Documentation of the demo application `demo.py` is available at 
 [sdopt-tearing.readthedocs.io](https://sdopt-tearing.readthedocs.io).
 
@@ -62,30 +63,20 @@ optimal solution vector of this integer program, and can be used as a starting
 point as well. 
 
 The cycles in the `*.cycles` file are given one per line, and each line gives 
-the edge list of one cycle. For example the line  
-`1 6 6 8 8 1` encodes the 
+the **node** list of one cycle. For example the line  
+`1 6 8` encodes the 
 cycle of the edges `(1, 6)`, `(6, 8)`, `(8, 1)`.
-
-Since only the median execution time is necessary to create the median execution 
-time vs. `n` plots, it was possible to give up on certain long running 
-computations. These graphs are given in the `*_aborted.zip` files. They do not 
-contain any `*.mfes`, `*.cycles`, `*.lp`, or `*.mst` since these problems were 
-not solved to optimality. The only claim is that computing the minimum feedback 
-edge set of these graphs with the proposed method takes longer than the median 
-execution time for the corresponding group of graphs.
 
 The graphs used for benchmarking are given in the following files.
  
  - Section 5.1. The easy test graphs for cross-checking correctness are given in
  the Python module `benchmarks.py`. 
  - Section 5.2. The sparse random graphs are given in 
- `benchmark_mfes/erdos_renyi.zip` and 
- `benchmark_mfes/erdos_renyi_aborted.zip`. The seeds `61` and `78` were skipped 
+ `benchmark_mfes/erdos_renyi.zip`. The seeds `61` and `78` were skipped 
  since they yielded random graphs with more than one strongly connected 
  components for some of the `n`s.
  - Section 5.3. The random tournaments for testing the worst-case behavior are 
- given in `benchmark_mfes/tournament.zip` and 
- `benchmark_mfes/tournament_aborted.zip`.
+ given in `benchmark_mfes/tournament.zip`.
  - Section 5.4. The challenging sparse graphs are given in 
  `benchmark_mfes/de_Bruijn.zip` and in `benchmark_mfes/Imase_Itoh.zip`. The 
  self-loops, if any, have been removed.
