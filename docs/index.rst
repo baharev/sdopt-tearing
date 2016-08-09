@@ -15,7 +15,7 @@ papers (submitted, only drafts are available on these links):
   - `Tearing systems of nonlinear equations I. A survey <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
   - `Tearing systems of nonlinear equations II. A practical exact algorithm <http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf>`_
 
-See also `Reproducing the results of the academic papers <https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-minimum-feedback-arc-set-paper>`_.
+See also `Reproducing the results of the academic papers <https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-the-minimum-feedback-arc-set-paper>`_.
 
 The source code of the prototype implementation is 
 `available on GitHub <https://github.com/baharev/sdopt-tearing#exact-and-heuristic-methods-for-tearing>`_ 
