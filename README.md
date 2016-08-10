@@ -6,8 +6,8 @@ Many of the implemented algorithms are described in the following
 academic papers:
 
   - [An exact method for the minimum feedback arc set problem](http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf) (submitted)
-  - [Tearing systems of nonlinear equations I. A survey.](http://reliablecomputing.eu/baharev_tearing_survey.pdf) (submitted)
-  - [Tearing systems of nonlinear equations II. A practical exact algorithm](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf) (submitted)
+  - [Decomposition methods for solving nonlinear systems of equations](http://reliablecomputing.eu/baharev_tearing_survey.pdf) (submitted)
+  - [Ordering matrices to bordered lower triangular form with minimal border width](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf) (submitted)
 
 See also [Reproducing the results of the academic papers](#reproducing-the-results-of-the-minimum-feedback-arc-set-paper)
 below.
@@ -86,7 +86,7 @@ Reproducing the results of the paper on optimal tearing
 -------------------------------------------------------
 
 The algorithms are documented in the academic paper
-[Tearing systems of nonlinear equations -- II. A practical exact algorithm](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf).
+[Ordering matrices to bordered lower triangular form with minimal border width](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf).
 
  - The `heap_md.py` module implements a greedy heuristic for ordering to lower
  Hessenberg form.

@@ -12,8 +12,8 @@ Many of the implemented algorithms are described in the following academic
 papers (submitted, only drafts are available on these links):
 
   - `An exact method for the minimum feedback arc set problem <http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf>`_
-  - `Tearing systems of nonlinear equations I. A survey <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
-  - `Tearing systems of nonlinear equations II. A practical exact algorithm <http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf>`_
+  - `Decomposition methods for solving nonlinear systems of equations <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
+  - `Ordering matrices to bordered lower triangular form with minimal border width <http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf>`_
 
 See also `Reproducing the results of the academic papers <https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-the-minimum-feedback-arc-set-paper>`_.
 

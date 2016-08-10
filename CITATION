@@ -42,15 +42,15 @@ Software Citation
 
 If you use the sdopt-tearing software, please cite the relevant paper(s):
 
-  - `Tearing systems of nonlinear equations I. A survey <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
-  - `Tearing systems of nonlinear equations II. A practical exact algorithm <http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf>`_
+  - `Decomposition methods for solving nonlinear systems of equations <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
+  - `Ordering matrices to bordered lower triangular form with minimal border width <http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf>`_
   - `An exact method for the minimum feedback arc set problem <http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf>`_
 
 .. code-block:: tex
 
     @ARTICLE{tearing-survey,
       AUTHOR = {A. Baharev and H. Schichl and A. Neumaier},
-      TITLE = {Tearing systems of nonlinear equations -- {I.} {A} survey},
+      TITLE = {Decomposition methods for solving nonlinear systems of equations},
       YEAR = {2016},
       URL = {http://reliablecomputing.eu/baharev\_tearing\_survey.pdf},
       NOTE = {Submitted}
@@ -58,14 +58,14 @@ If you use the sdopt-tearing software, please cite the relevant paper(s):
 
     @ARTICLE{tearing-exact,
       AUTHOR = {A. Baharev and H. Schichl and A. Neumaier},
-      TITLE = {Tearing systems of nonlinear equations -- {II.} {A} practical exact algorithm},
+      TITLE = {Ordering matrices to bordered lower triangular form with minimal border width},
       YEAR = {2016},
       URL = {http://reliablecomputing.eu/baharev\_tearing\_exact\_algorithm.pdf},
       NOTE = {Submitted}
     }
 
     @ARTICLE{mfes,
-      AUTHOR = {A. Baharev and H. Schichl and A. Neumaier},
+      AUTHOR = {A. Baharev and H. Schichl and A. Neumaier and T. Achterberg},
       TITLE = {An exact method for the minimum feedback arc set problem},
       YEAR = {2016},
       URL = {http://reliablecomputing.eu/baharev\_minimum\_feedback\_arc\_set.pdf},
