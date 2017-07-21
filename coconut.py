@@ -386,12 +386,15 @@ def serialize_constraint_jacobian():
         print('---------------------------------------------------------------')
         print('Problem:', name)
         print('rows: {}, cols: {}, nzeros: {}'.format(nrows, ncols, nzeros))
-        #if nrows != ncols:
-        #    print('Rectangular problem\n')
-        #    continue
-        if nrows < 8 or ncols < 8:
-            print('Too small matrix\n')
+        if nrows != ncols:
+            print('Rectangular problem\n')
             continue
+        #if nrows < 10 or ncols < 10:
+        #    print('Too small matrix\n')
+        #    continue
+        #if nrows > 300 or ncols > 300:
+        #    print('Too large matrix\n')
+        #    continue
         if nrows*ncols == nzeros:
             print('Full Jacobian, skipping problem\n')
             continue
@@ -937,13 +940,13 @@ def plot_dulmage_mendelsohn():
 #===============================================================================
 
 TMPDIR  = '/tmp/gjh/'
-COCONUT_MOD_DIR = 'data/coconut/prefixed_modfiles'
-GJH_DIR = 'data/coconut/prefixed_presolve_gjh/'
+COCONUT_MOD_DIR = 'data/revision/mods'
+GJH_DIR = 'data/revision/gjh/'
 
 #DATABANK_DIR = 'data/coconut/jac_databank/'
 #SOLUTION_DIR = 'data/coconut/jac_rnd_solutions/'
-DATABANK_DIR = 'data/coconut/first_order_opt_databank/'
-SOLUTION_DIR = 'data/coconut/first_order_opt_solutions/'
+DATABANK_DIR = 'data/revision/oldbench_jac_databank/'
+SOLUTION_DIR = 'data/revision/oldbench_jac_solutions/'
 
 
 PROBLEM_STATS = '.stats.pkl.gz' # lives in DATABANK_DIR
@@ -958,14 +961,17 @@ GJH_COMMAND = 'gjh'
 
 def run():
     ###  Works in TMPDIR, writes (populates) GJH_DIR
-    #generate_gjh(presolve=True)
+    generate_gjh(presolve=False)
+    #quit()
     #---------------------------------------
     ###  Creates the PROBLEM_STATS file in the DATABANK_DIR but nothing else
-    #create_problem_stats_with_segment_check()
+    create_problem_stats_with_segment_check()
+    #quit()
     #---------------------------------------
     ###  Creates the edgelists in DATABANK_DIR based on PROBLEM_STATS
-    #serialize_constraint_jacobian()  # Deletes all non-hidden files
-    #deser = get_g_eqs
+    serialize_constraint_jacobian()  # Deletes all non-hidden files
+    deser = get_g_eqs
+    #quit()
     #-
     #serialize_first_order_cond() # Deletes ditto
     #deser = get_first_order_cond_g_eqs
@@ -976,20 +982,21 @@ def run():
     ###  Writes the SOLUTION_DIR. All problems in PROBLEM_STATS solved with 
     #    either solve_instance or solve_rnd_instance. The latter also writes the
     #    random mapping (relabelling of the eqs) into the solution directory.
-    #solve_func = solve_instance
+    solve_func = solve_instance
     #solve_func = solve_rnd_instance
-    #solve_problems(dirname, deser, solve_func)
+    solve_problems(dirname, deser, solve_func)
+    #quit()
     #---------------------------------------
-    #read_solutions(dirname)
+    read_solutions(dirname)
     #
     #read_rnd_solutions(dirname)
     #show_perf_stats(dirname)
-    show_size_distribution(dirname, size_KKT, no_skip) 
+    #show_size_distribution(dirname, size_KKT, no_skip) 
     #show_size_distribution(dirname, size_jac, no_skip) # no_skip, skip_non_square 
     #---------------------------------------
     ###  Writes the PICS_TMP_DIR
     #    Non-random:
-    #select_func = select_plots
+    select_func = select_plots
     #    Random: needs a new deser since we have to relabel the equations too 
     #    and the mapping for that is in the dir_name directory.
     #    We also have to reassing deser: a curried version of either 
@@ -998,7 +1005,7 @@ def run():
     #deser = partial(get_rnd_g_eqs, dir_name=dirname)
     #select_func = select_rnd_plots
     #
-    #solutions_to_pdf(dirname, deser, select_func)
+    solutions_to_pdf(dirname, deser, select_func)
     #---------------------------------------
     #cross_check()
     #check_monotonicity()

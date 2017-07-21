@@ -5,13 +5,13 @@
 from __future__ import division, print_function
 from contextlib import contextmanager
 from time import time
-import six
+from six import iteritems, itervalues
 from gurobipy import LinExpr, GRB, Model, setParam
 import networkx as nx
 from benchmarks import gen_benchmark_digraphs, digraph_to_undirected_bipartite,\
                        gen_digraphs_as_rectangular_bipartite
 from equations import info_on_bipartite_graph, read_bipartite_graph
-from heap_md import min_degree , matching_to_dag
+from heap_md import min_degree
 from mfes import run_mfes_heuristic
 from order_util import deterministic_topological_sort, permute_to_hessenberg
 from test_tearing import gen_testproblems
@@ -280,7 +280,7 @@ def solve_relaxation(g, eqs, forbidden, loops, match=None):
     n_vars, n_matched_vars = len(g)-len(eqs), objective  
     lb = n_vars - n_matched_vars # unmatched vars are tear variables
     matches = \
-           sorted(edge for edge,var in six.iteritems(y) if int(round(var.x))==1)
+           sorted(edge for edge, var in iteritems(y) if int(round(var.x))==1)
     #log('matches:', matches)
     return matches, lb
 
@@ -305,6 +305,37 @@ def orient_wrt_matching(g_orig, eqs, relax_matching, lb):
     assert len(variables) == len(sources) + len(relax_matching)
     assert lb == len(sources)
     return dig
+
+def matching_to_dag(g_orig, eqs, forbidden, rowp, colp, matches, tears, sinks):
+    matched_edges = set(edge for edge in iteritems(matches) if edge[0] in eqs)
+    len_matches = len(matched_edges)
+    assert not (matched_edges & forbidden)
+    
+    dag = nx.DiGraph()
+    dag.add_nodes_from(rowp) # Empty (isolated) equations are allowed
+    #dag.add_nodes_from(variables)
+    for eq_var in g_orig.edges_iter(rowp):
+        u, v = eq_var if eq_var in matched_edges else (eq_var[1], eq_var[0])
+        dag.add_edge(u, v)
+        matched_edges.discard(eq_var)
+    
+    assert not matched_edges
+    # FIXME Comparing str and int breaks on Py 3
+    has_all_nodes = sorted(dag, key=str) == sorted(g_orig, key=str)
+    assert has_all_nodes # Isolated (degree zero) var nodes?
+    assert nx.is_directed_acyclic_graph(dag)
+
+    # Check whether the matching is sane
+    assert len_matches == len(eqs) - len(sinks)
+    assert len_matches == len(g_orig) - len(eqs) - len(tears)    
+    
+    more_than_one_outedge = [ eq for eq in rowp if len(dag.succ[eq]) > 1 ] 
+    assert not more_than_one_outedge, more_than_one_outedge
+    
+    more_than_one_inedge = [var for var in colp if len(dag.pred[var]) > 1]
+    assert not more_than_one_inedge, more_than_one_inedge
+    
+    return dag
 
 def mfes_heuristic(dig, eqs):
     objective, elims = run_mfes_heuristic(dig, try_one_cut=True)
@@ -383,7 +414,7 @@ def build_ilp(g, eqs, forbidden, simple_cycles, match):
     # Set feasible solution from the matching, if any
     if match is not None:
         match = set(match)
-        for edge, var in six.iteritems(y):
+        for edge, var in iteritems(y):
             var.setAttr('Start', 1 if edge in match else 0)
     return m, y
 
@@ -414,7 +445,7 @@ def set_lower_bound_if_any(g, eqs, m, y):
     lb = g.graph.get('trivial_lb')
     if lb is None:
         return
-    lhs = LinExpr( [1]*len(y), list(six.itervalues(y)) )
+    lhs = LinExpr([1]*len(y), list(itervalues(y)))
     # See solve_relaxation: objective is to maximize the sum of matched 
     # variables, the lb is on the unmatched variables: n_vars - lb is an upper 
     # bound on the variables that can be matched at most
@@ -504,7 +535,7 @@ def select_subset_of_loops(g, eqs, small_loops, max_coverage=1):
     # searches in linear time in the loop tuple.
     start = time()
     for e in edges:
-        in_loops = [ var for loop,var in six.iteritems(loop_vars) if e in loop ]
+        in_loops = [var for loop,var in iteritems(loop_vars) if e in loop]
         if in_loops:
             lhs = LinExpr([1]*len(in_loops), in_loops)
             m.addConstr(lhs, GRB.LESS_EQUAL, max_coverage)
@@ -517,8 +548,7 @@ def select_subset_of_loops(g, eqs, small_loops, max_coverage=1):
     success = solve_ilp(m)
     assert success, 'Solver failures are not handled'
     objective = int(round(m.getObjective().getValue()))
-    loop_subset = \
-             { l for l,var in six.iteritems(loop_vars) if int(round(var.x))==1 }
+    loop_subset = {l for l,var in iteritems(loop_vars) if int(round(var.x))==1}
     assert len(loop_subset)==objective
     #log()
     #log('Number of rows in the cycle matrix:', objective)

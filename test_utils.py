@@ -9,13 +9,14 @@ import string
 import six
 import networkx as nx
 from networkx.algorithms.bipartite import is_bipartite_node_set
+from networkx.algorithms.bipartite import random_graph as bipartite_random_graph
 from utils import duplicates, deserialize, DATADIR, marshal_dump
 from py3compat import irange, izip
 
 def log(*args): pass
 #log = print
 
-def create_diagonal_matrix(n, seed, rng):
+def create_diagonal_matrix(n, rng):
     n_nodes = 2*n
     g = nx.Graph()
     eqs = list(irange(n))
@@ -40,7 +41,7 @@ def raw_rnd_bipartite(n_eqs, n_vars, seed, c=1.0):
     n_nodes = n_eqs + n_vars
     p = n_nodes/(n_eqs*n_vars + 1.0e-17)*c
     p = min(p, 1.0 - 1.0e-6) 
-    return nx.bipartite_random_graph(n_eqs, n_vars, p, seed)
+    return bipartite_random_graph(n_eqs, n_vars, p, seed)
 
 def _finalize(g, n_eqs, n_vars, rng):
     log('eqs =', n_eqs, ' vars =', n_vars, ' edges =', g.number_of_edges())

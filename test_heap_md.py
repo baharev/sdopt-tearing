@@ -70,13 +70,13 @@ def test_nonsingular_spiked(n, seed):
 
 def test_to_hessenberg_none_forbidden_diagonal(n, seed):
     rng = Random(seed)
-    g, eqs = create_diagonal_matrix(n, seed, rng)
+    g, eqs = create_diagonal_matrix(n, rng)
     rowp = to_hessenberg_form(g, eqs)[0]
     assert rowp == sorted(rowp)
 
 def test_to_hessenberg_all_forbidden_diagonal(n, seed):
     rng = Random(seed)
-    g, eqs = create_diagonal_matrix(n, seed, rng)
+    g, eqs = create_diagonal_matrix(n, rng)
     rowp = to_hessenberg_form(g, eqs, set(g.edges_iter(eqs)))[0]
     assert rowp == sorted(rowp)
 
@@ -84,14 +84,14 @@ def test_to_hessenberg_all_forbidden_diagonal(n, seed):
 
 def test_to_spiked_none_forbidden_diagonal(n, seed):
     rng = Random(seed)
-    g, eqs = create_diagonal_matrix(n, seed, rng)
+    g, eqs = create_diagonal_matrix(n, rng)
     singular, rowp = to_spiked_form(g, eqs)[:2]
     assert not singular
     assert rowp == sorted(rowp)
 
 def test_to_spiked_all_forbidden_diagonal(n, seed):
     rng = Random(seed)
-    g, eqs = create_diagonal_matrix(n, seed, rng)
+    g, eqs = create_diagonal_matrix(n, rng)
     singular, rowp = to_spiked_form(g, eqs, set(g.edges_iter(eqs)))[:2]
     assert not singular
     assert rowp == sorted(rowp)
@@ -144,22 +144,16 @@ def check_nondecreasing_row_weights(bip, rowp, colp, row_weights):
 
 #-------------------------------------------------------------------------------
 
-if __name__ == '__main__':
+def _run_tests():
     
-    print('Started generative testing...')
-    
-    import os
-    os.environ['HYPOTHESIS_STORAGE_DIRECTORY'] = '/tmp/ht'
-    from hypothesis import given, Settings
+    from hypothesis import given
     from hypothesis.strategies import integers
     
     MAX_VALUE = 8
-    MAX_EXAMP = 500
     
     hessenberg_decor = given(n_eqs  = integers(min_value=1, max_value=MAX_VALUE),
                              n_vars = integers(min_value=0, max_value=MAX_VALUE), 
-                             seed   = integers(min_value=0),
-                             settings = Settings(max_examples=MAX_EXAMP))
+                             seed   = integers(min_value=0))
     
     #hessenberg_decor(test_proxy)()
     #quit()
@@ -172,8 +166,7 @@ if __name__ == '__main__':
     #-----
     
     hessenberg_decor = given(n    = integers(min_value=1, max_value=MAX_VALUE),
-                             seed = integers(min_value=0),
-                             settings = Settings(max_examples=MAX_EXAMP))
+                             seed = integers(min_value=0))
     
     # Checking whether the row order is retained (hashing could mess it up)
     hessenberg_decor(test_to_hessenberg_none_forbidden_diagonal)()
@@ -182,8 +175,7 @@ if __name__ == '__main__':
     #-----
    
     spiked_decor = given(n    = integers(min_value=1, max_value=MAX_VALUE),
-                         seed = integers(min_value=0),
-                         settings = Settings(max_examples=MAX_EXAMP))
+                         seed = integers(min_value=0))
     
     spiked_decor(test_nonsingular_spiked)()
     spiked_decor(test_to_spiked_none_forbidden)()
@@ -193,5 +185,18 @@ if __name__ == '__main__':
     # Checking whether the row order is retained (hashing could mess it up)    
     spiked_decor(test_to_spiked_none_forbidden_diagonal)()
     spiked_decor(test_to_spiked_all_forbidden_diagonal)()
+
+
+if __name__ == '__main__':
+    
+    print('Started generative testing...')
+    
+    import os
+    os.environ['HYPOTHESIS_STORAGE_DIRECTORY'] = '/tmp/ht'
+    
+    from hypothesis import settings
+    
+    with settings(max_examples=500, timeout=0):
+        _run_tests()
     
     print('Done!')

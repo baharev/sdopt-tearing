@@ -11,9 +11,7 @@
 from __future__ import print_function
 from py3compat import cPickle_loads, cPickle_dumps, cPickle_HIGHEST_PROTOCOL
 from itertools import chain
-from networkx import DiGraph
-from networkx import max_weight_matching, is_directed_acyclic_graph
-from six import iteritems
+from networkx import max_weight_matching
 from pqueue import PriorityQueue as heapdict
 from py3compat import irange
 from order_util import colp_to_spiked_form, get_hessenberg_order, check_spiked_form,\
@@ -90,19 +88,20 @@ def to_hessenberg_form(g, eqs, forbidden=None):
 
 
 def min_degree(g_orig, eqs, forbidden=None):
-    '''Returns: tuple( [row permutation], [column permutation], 
-    {eq:var and var:eq matches}, set(tear vars), set(residual equations) ).'''
+    '''Returns: tuple([row permutation], [column permutation], 
+    {eq: var and var: eq matches}, set(tear vars), set(residual equations)).'''
     # Duplicated in bb_tear.initial_solution with none forbidden
     assert eqs
     if forbidden is None:
         forbidden = set()
     if not isinstance(eqs, (set, dict)):
         eqs = set(eqs)  # Make sure that `n in eqs` will be O(1).
-    g_allowed, g = setup_graphs(g_orig, eqs, forbidden)
+    g_allowed, g = setup_graphs(g_orig, forbidden)
     eq_tot = create_heap(g_allowed, g, eqs)
     rowp, matches = [ ], { }
     while eq_tot:
-        (cost, _, eq), _ = eq_tot.popitem()
+        (_cost, _tot, _eq), eq = eq_tot.popitem()
+        #assert _eq == eq, (_eq, eq)
         #print('Eq:', eq)
         rowp.append(eq)
         
@@ -144,7 +143,7 @@ def min_degree(g_orig, eqs, forbidden=None):
     return rowp, colp, matches, tear_set, sink_set
 
 
-def setup_graphs(g_orig, eqs, forbidden):
+def setup_graphs(g_orig, forbidden):
     # g is a copy of g_orig; g_allowed contains only the allowed edges of g_orig
     g_pkl = cPickle_dumps(g_orig, cPickle_HIGHEST_PROTOCOL)
     g = cPickle_loads(g_pkl)
@@ -163,38 +162,6 @@ def create_heap(g_allowed, g, eqs):
         cost = tot-1 if g_allowed[e] else tot
         eq_tot[e]  = (cost, tot, e)
     return eq_tot
-
-
-def matching_to_dag(g_orig, eqs, forbidden, rowp, colp, matches, tears, sinks):
-    matched_edges = set(edge for edge in iteritems(matches) if edge[0] in eqs)
-    len_matches = len(matched_edges)
-    assert not (matched_edges & forbidden)
-    
-    dag = DiGraph()
-    dag.add_nodes_from(rowp) # Empty (isolated) equations are allowed
-    #dag.add_nodes_from(variables)
-    for eq_var in g_orig.edges_iter(rowp):
-        u, v = eq_var if eq_var in matched_edges else (eq_var[1], eq_var[0])
-        dag.add_edge(u, v)
-        matched_edges.discard(eq_var)
-    
-    assert not matched_edges
-    # FIXME Comparing str and int breaks on Py 3
-    has_all_nodes = sorted(dag, key=str) == sorted(g_orig, key=str)
-    assert has_all_nodes # Isolated (degree zero) var nodes?
-    assert is_directed_acyclic_graph(dag)
-
-    # Check whether the matching is sane
-    assert len_matches == len(eqs) - len(sinks)
-    assert len_matches == len(g_orig) - len(eqs) - len(tears)    
-    
-    more_than_one_outedge = [ eq for eq in rowp if len(dag.succ[eq]) > 1 ] 
-    assert not more_than_one_outedge, more_than_one_outedge
-    
-    more_than_one_inedge = [var for var in colp if len(dag.pred[var]) > 1]
-    assert not more_than_one_inedge, more_than_one_inedge
-    
-    return dag
 
 
 def run_tests():
