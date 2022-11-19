@@ -68,7 +68,7 @@ You find the source code of the demo application in :file:`demo.py`.
 ----------------------------------
 
 The `Modelica <https://modelica.org/>`_ model :file:`data/demo.mo` has 
-already been flattened with the `JModelica <https//jmodelica.org/>`_ 
+already been flattened with the `JModelica <https://jmodelica.org/>`_ 
 compiler by calling :func:`compile_fmux`; check the :mod:`flatten` and 
 :mod:`fmux_creator` modules for details. **The demo application takes the 
 flattened model as input.** The `OpenModelica Compiler 
@@ -366,7 +366,7 @@ will be used for evaluating heuristics that do not require the natural block
 structure. **I hope to receive help from the Modelica community to establish a 
 test set** where the :ref:`natural block structure <natural-block-structure>` is 
 available. Dr.-Ing. Michael Sielemann (Technical Director for Aeronautics and 
-Space at `Modelon Deutschland GmbH <https://www.modelon.com/>`_) has already 
+Space at `Modelon Deutschland GmbH <https://modelon.com/>`_) has already 
 offered his kind help.
 
 --------------------------------------------------------------------------------
