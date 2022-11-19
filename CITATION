@@ -42,9 +42,9 @@ Software Citation
 
 If you use the sdopt-tearing software, please cite the relevant paper(s):
 
-  - `Decomposition methods for solving nonlinear systems of equations <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
-  - `Ordering matrices to bordered lower triangular form with minimal border width <http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf>`_
-  - `An exact method for the minimum feedback arc set problem <http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf>`_
+  - `Decomposition methods for solving nonlinear systems of equations <https://baharev.info/publications/baharev_tearing_survey.pdf>`_
+  - `Ordering matrices to bordered lower triangular form with minimal border width <https://baharev.info/publications/baharev_tearing_exact_algorithm.pdf>`_
+  - `An exact method for the minimum feedback arc set problem <https://baharev.info/publications/baharev_minimum_feedback_arc_set.pdf>`_
 
 .. code-block:: tex
 
@@ -52,7 +52,7 @@ If you use the sdopt-tearing software, please cite the relevant paper(s):
       AUTHOR = {A. Baharev and H. Schichl and A. Neumaier},
       TITLE = {Decomposition methods for solving nonlinear systems of equations},
       YEAR = {2016},
-      URL = {http://reliablecomputing.eu/baharev\_tearing\_survey.pdf},
+      URL = {https://baharev.info/publications/baharev\_tearing\_survey.pdf},
       NOTE = {Submitted}
     }
 
@@ -60,15 +60,27 @@ If you use the sdopt-tearing software, please cite the relevant paper(s):
       AUTHOR = {A. Baharev and H. Schichl and A. Neumaier},
       TITLE = {Ordering matrices to bordered lower triangular form with minimal border width},
       YEAR = {2016},
-      URL = {http://reliablecomputing.eu/baharev\_tearing\_exact\_algorithm.pdf},
+      URL = {https://baharev.info/publications/baharev\_tearing\_exact\_algorithm.pdf},
       NOTE = {Submitted}
     }
 
     @ARTICLE{mfes,
-      AUTHOR = {A. Baharev and H. Schichl and A. Neumaier and T. Achterberg},
-      TITLE = {An exact method for the minimum feedback arc set problem},
-      YEAR = {2016},
-      URL = {http://reliablecomputing.eu/baharev\_minimum\_feedback\_arc\_set.pdf},
-      NOTE = {Submitted}
+        author = {Baharev, Ali and Schichl, Hermann and Neumaier, Arnold and Achterberg, Tobias},
+        title = {An Exact Method for the Minimum Feedback Arc Set Problem},
+        year = {2021},
+        issue_date = {December 2021},
+        publisher = {Association for Computing Machinery},
+        address = {New York, NY, USA},
+        volume = {26},
+        issn = {1084-6654},
+        url = {https://doi.org/10.1145/3446429},
+        doi = {10.1145/3446429},
+        journal = {ACM J. Exp. Algorithmics},
+        month = {apr},
+        articleno = {1.4},
+        numpages = {28},
+        keywords = {minimum feedback vertex set, maximum acyclic subgraph, minimum feedback arc set, tearing, Linear ordering problem}
     }
+
+}
 

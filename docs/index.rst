@@ -11,9 +11,9 @@ Exact and heuristic methods for tearing
 Many of the implemented algorithms are described in the following academic 
 papers (submitted, only drafts are available on these links):
 
-  - `An exact method for the minimum feedback arc set problem <http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf>`_
-  - `Decomposition methods for solving nonlinear systems of equations <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
-  - `Ordering matrices to bordered lower triangular form with minimal border width <http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf>`_
+  - `An exact method for the minimum feedback arc set problem <https://baharev.info/publications/baharev_minimum_feedback_arc_set.pdf>`_
+  - `Decomposition methods for solving nonlinear systems of equations <https://baharev.info/publications/baharev_tearing_survey.pdf>`_
+  - `Ordering matrices to bordered lower triangular form with minimal border width <https://baharev.info/publications/baharev_tearing_exact_algorithm.pdf>`_
 
 See also `Reproducing the results of the academic papers <https://github.com/baharev/sdopt-tearing#reproducing-the-results-of-the-minimum-feedback-arc-set-paper>`_.
 
@@ -191,7 +191,7 @@ shown below for your convenience.
    Hierarchical tearing with the natural block structure
 
 Further details are discussed in 
-`Tearing systems of nonlinear equations I. A survey <http://reliablecomputing.eu/baharev_tearing_survey.pdf>`_
+`Tearing systems of nonlinear equations I. A survey <https://baharev.info/publications/baharev_tearing_survey.pdf>`_
 under *7.3. Hierarchical tearing*.
 
 .. _tearing-in-Modelica:
@@ -388,7 +388,7 @@ Improving numerical stability
 **Tearing can yield small but very ill-conditioned systems**; as a consequence, 
 the final reduced systems can be notoriously difficult or even impossible to 
 solve. **Our recent publications** `[1] <http://dx.doi.org/10.1002/aic.14305>`_ 
-**and** `[2] <http://reliablecomputing.eu/baharev_manifold_based_starting_points.pdf>`_  
+**and** `[2] <https://link.springer.com/article/10.1007/s11075-016-0249-x>`_  
 **show how this well-known numerical issue of tearing can be resolved.** The cost of the 
 improved numerical stability is the significantly increased computation time. 
 

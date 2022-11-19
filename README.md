@@ -5,9 +5,9 @@ Exact and heuristic methods for tearing
 Many of the implemented algorithms are described in the following 
 academic papers:
 
-  - [An exact method for the minimum feedback arc set problem](http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf) (submitted)
-  - [Decomposition methods for solving nonlinear systems of equations](http://reliablecomputing.eu/baharev_tearing_survey.pdf) (submitted)
-  - [Ordering matrices to bordered lower triangular form with minimal border width](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf) (submitted)
+  - [An exact method for the minimum feedback arc set problem](https://baharev.info/publications/baharev_minimum_feedback_arc_set.pdf)
+  - [Decomposition methods for solving nonlinear systems of equations](https://baharev.info/publications/baharev_tearing_survey.pdf) (submitted)
+  - [Ordering matrices to bordered lower triangular form with minimal border width](https://baharev.info/publications/baharev_tearing_exact_algorithm.pdf) (submitted)
 
 See also [Reproducing the results of the academic papers](#reproducing-the-results-of-the-minimum-feedback-arc-set-paper)
 below.
@@ -35,7 +35,7 @@ Reproducing the results of the minimum feedback arc set paper
 -------------------------------------------------------------
 
 The results of the paper
-[An exact method for the minimum feedback arc set problem](http://reliablecomputing.eu/baharev_minimum_feedback_arc_set.pdf) 
+[An exact method for the minimum feedback arc set problem](https://baharev.info/publications/baharev_minimum_feedback_arc_set.pdf) 
 can be reproduced as follows. 
 
 **Algorithms**
@@ -86,7 +86,7 @@ Reproducing the results of the paper on optimal tearing
 -------------------------------------------------------
 
 The algorithms are documented in the academic paper
-[Ordering matrices to bordered lower triangular form with minimal border width](http://reliablecomputing.eu/baharev_tearing_exact_algorithm.pdf).
+[Ordering matrices to bordered lower triangular form with minimal border width](https://baharev.info/publications/baharev_tearing_exact_algorithm.pdf).
 
  - The `heap_md.py` module implements a greedy heuristic for ordering to lower
  Hessenberg form.
@@ -99,8 +99,8 @@ The algorithms are documented in the academic paper
  are under `data/benchmark_tearing/`. The results of the 12 runs are plotted in the 
  following PDF files (but only for those problems that have at most 
  500 non-zero entries):  
- [Ordering the Jacobian of the equality constraints](http://reliablecomputing.eu/constraint_jacobian_nz_500.pdf) (33.8 MB) and  
- [Ordering the Jacobian of the first-order optimality conditions](http://reliablecomputing.eu/first_order_opt_cond_nz_500.pdf) (49.3 MB).
+ [Ordering the Jacobian of the equality constraints](https://baharev.info/publications/constraint_jacobian_nz_500.pdf) (33.8 MB) and  
+ [Ordering the Jacobian of the first-order optimality conditions](https://baharev.info/publications/first_order_opt_cond_nz_500.pdf) (49.3 MB).
 
 The tests for checking correctness are in the `test_<module name>.py` 
 modules. Cross-checking the ILP-based and the custom branch and bound 
