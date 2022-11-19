@@ -446,7 +446,7 @@ the following Python code is generated (hand-edited to improve readability) ::
     u5 = 2.0 * u3  # df/dy = 2*exp(3*x+2*y)
 
 **This code was automatically generated** with 
-the sibling package `SDOPT <https://sdopt.readthedocs.org>`_.
+the sibling package `SDOPT <https://sdopt.readthedocs.io/en/latest/>`_.
 
 The templated C++ version of this code will greatly benefit from code 
 optimization performed by the C++ compiler, especially from `constant folding 
